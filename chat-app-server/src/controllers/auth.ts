@@ -2,6 +2,7 @@ import { Response, Request } from "express";
 import { User } from "../models/user";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { IUser } from "../interfaces/dbInterfaces";
 
 class AuthController {
   async register(req: Request, res: Response) {
@@ -53,12 +54,14 @@ class AuthController {
     let salt = await bcrypt.genSalt(10);
     let hashedPassword = await bcrypt.hash(password, salt);
 
-    User.create({
+    let newUser: IUser = {
       email: email,
       username: username,
       password: hashedPassword,
       profilePic: process.env.DEFAULT_PROFILE_PIC || "null",
-    })
+    }
+
+    User.create(newUser)
       .then((user) => {
         res.statusCode = 201;
         return res.json(user);
@@ -136,7 +139,7 @@ class AuthController {
         "message": "error encountered, this shouldn't be happening...",
       });
     }
-    const token = jwt.sign({ username: username }, process.env.SECRET);
+    const token = jwt.sign({ username: username, userId: user._id }, process.env.SECRET);
     res.cookie('jwt', token, {
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 30,
