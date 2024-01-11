@@ -3,6 +3,7 @@ import { IConversation } from "../interfaces/dbInterfaces";
 
 const conversationSchema = new Schema<IConversation> ({
   lastMessage: String,
+  name: String,
 }, {
   timestamps: true
 });

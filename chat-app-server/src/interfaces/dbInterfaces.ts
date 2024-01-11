@@ -16,6 +16,7 @@ interface IMessage {
 }
 
 interface IConversation {
+  name: String, // "" if it's a one to one conversation, otherwise group chat
   lastMessage: String,
   createdAt?: Date,
   updatedAt?: Date,

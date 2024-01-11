@@ -69,7 +69,7 @@ class AuthController {
       .catch((err) => {
         res.statusCode = 500;
         return res.json({
-          "message": "error encountered, this shouldn't be happening...",
+          "message": "error encountered, this shouldn't be happening..." + err,
         })
       });
   }
@@ -136,7 +136,7 @@ class AuthController {
     if (!process.env.SECRET) {
       res.statusCode = 500;
       return res.json({
-        "message": "error encountered, this shouldn't be happening...",
+        "message": "secret key not found",
       });
     }
     const token = jwt.sign({ username: username, userId: user._id }, process.env.SECRET);
