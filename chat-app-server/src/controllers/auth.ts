@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 class AuthController {
   async register(req: Request, res: Response) {
     const { username, password, email } = req.body;
-    
+
     //in case someone's trying to be real funny here
     if (!(typeof username) || !(typeof password) || !(typeof email)) {
       res.statusCode = 400;
@@ -59,22 +59,101 @@ class AuthController {
       password: hashedPassword,
       profilePic: process.env.DEFAULT_PROFILE_PIC || "null",
     })
-    .then((user) => {
-      res.statusCode = 201;
-      return res.json(user);
-    })
-    .catch((err) => {
+      .then((user) => {
+        res.statusCode = 201;
+        return res.json(user);
+      })
+      .catch((err) => {
+        res.statusCode = 500;
+        return res.json({
+          "message": "error encountered, this shouldn't be happening...",
+        })
+      });
+  }
+
+  async login(req: Request, res: Response) {
+    const { username, password, email } = req.body;
+
+    //in case someone's trying to be real funny here
+    if (!(typeof username) || !(typeof password) || !(typeof email)) {
+      res.statusCode = 400;
+      res.cookie("jwt", "", {
+        httpOnly: true,
+        maxAge: 0,
+      });
+      return res.json({
+        "message": "nice try dude",
+      });
+    }
+    if (!/^[a-zA-Z0-9_]{6,20}$/.test(username)) {
+      res.statusCode = 400;
+      res.cookie("jwt", "", {
+        httpOnly: true,
+        maxAge: 0,
+      });
+      return res.json({
+        "message": "nice try dude",
+      });
+    }
+    if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,20}$/.test(password)) {
+      res.statusCode = 400;
+      res.cookie("jwt", "", {
+        httpOnly: true,
+        maxAge: 0,
+      });
+      return res.json({
+        "messaeg": "nice try dude",
+      });
+    }
+
+    const user = await User.findOne({ username: username });
+
+    if (!user) {
+      res.statusCode = 401;
+      res.cookie("jwt", "", {
+        httpOnly: true,
+        maxAge: 0,
+      });
+      return res.json({
+        "message": "wrong credentials",
+      });
+    }
+
+    if (!await bcrypt.compare(password, user.password)) {
+      res.statusCode = 401;
+      res.cookie("jwt", "", {
+        httpOnly: true,
+        maxAge: 0,
+      });
+      return res.json({
+        "message": "wrong credentials",
+      });
+    }
+
+    if (!process.env.SECRET) {
       res.statusCode = 500;
       return res.json({
         "message": "error encountered, this shouldn't be happening...",
-      })
+      });
+    }
+    const token = jwt.sign({ username: username }, process.env.SECRET);
+    res.cookie('jwt', token, {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24 * 30,
     });
+    res.statusCode = 200;
+    return res.json(user);
   }
 
-  login(req: Request, res: Response) {
+  logout(req: Request, res: Response) {
+    res.statusCode = 200;
+    res.cookie("jwt", "", {
+      httpOnly: true,
+      maxAge: 0,
+    });
     return res.json({
-      "message": "todo",
-    })
+      "message": "log out successfully"
+    });
   }
 }
 
