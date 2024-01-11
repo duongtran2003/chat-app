@@ -13,7 +13,7 @@ function jwtGuard(req: Request, res: Response, next: NextFunction) {
     res.statusCode = 500;
     return res.json({
       "message": "server has encountered an error",
-    })
+    });
   }
   const claims = jwt.verify(req.cookies["jwt"], process.env.SECRET);
   if (!claims) {
