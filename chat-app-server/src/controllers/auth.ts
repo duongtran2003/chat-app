@@ -158,6 +158,30 @@ class AuthController {
       "message": "log out successfully"
     });
   }
+
+  // get user from token
+  retrieve(req: Request, res: Response) {
+    const userId = res.locals.claims.userId;
+    User.findById(userId)
+      .then((user) => {
+        if (user) {
+          res.statusCode = 200;
+          return res.json(user);
+        }
+        else {
+          res.statusCode = 401;
+          return res.json({
+            "message": "invalid token",
+          });
+        }
+      })
+      .catch((err) => {
+        res.statusCode = 500;
+        return res.json({
+          "message": "error encountered " + err,
+        });
+      });
+  }
 }
 
 module.exports = new AuthController();
