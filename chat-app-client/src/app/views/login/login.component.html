@@ -1,16 +1,35 @@
 <!-- <a routerLink="/register" routerLinkActive="active">register</a> -->
 <div class="bg-amber-600 bg-opacity-80 min-h-screen p-1">
-  <div class="bg-white px-8 py-12 mt-24 w-fit mx-auto flex flex-col rounded-lg shadow-2xl">
-    <div>There's supposed to be a logo here but...</div> 
-    <form class="flex flex-col w-80 mb-24 mt-12">
-      <label>Username</label>
-      <input type="text">
-      <label>Password</label>
-      <input type="text">
-      <div>Credential error goes here, idk...</div>
-      <div>Want to recover your password? Click here. Will implement in the future</div>
-      <button type="submit">Here goes lebutton</button>
+  <div class="bg-white px-12 py-12 mt-24 w-fit mx-auto flex flex-col rounded-lg shadow-2xl">
+    <div class="flex font-bold text-2xl">Login</div>
+    <form class="flex flex-col w-64 mb-4 mt-8">
+      <input type="text" placeholder="Username"
+        class="mb-4 outline-none border px-2 py-2 placeholder-gray-300 hover:border-amber-500 focus:border-amber-500 focus:rounded-sm duration-200">
+      <input type="password" placeholder="Password"
+        class="mb-4 outline-none border px-2 py-2 placeholder-gray-300 hover:border-amber-500 focus:border-amber-500 focus:rounded-sm duration-200">
+      <div class="text-xs text-red-600 mb-2">Credential error goes here, idk...</div>
+      <button type="submit"
+        class="mt-4 px-8 py-2 bg-amber-500 hover:bg-amber-600 duration-200 rounded-sm text-white font-light select-none">LOGIN</button>
     </form>
-    <div>Login with blah blah, idk i can't implement that, for now...</div>
+    <div class="flex justify-between">
+      <a routerLink="/register" routerLinkActive="active" class="text-xs text-amber-600">Register</a>
+      <div class="text-xs text-gray-400">Recover password (todo)</div>
+    </div>
+    <div class="mt-8">
+      <div class="flex justify-center border border-gray-400 h-0 items-center">
+        <div class="bg-white px-2 text-sm">OR</div>
+      </div>
+      <div class="flex justify-center space-x-3 mt-4">
+        <div class="text-blue-600 text-lg">
+          <fa-icon [icon]="facebookIcon"></fa-icon>
+        </div>
+        <div class="text-red-600 text-lg">
+          <fa-icon [icon]="googleIcon"></fa-icon>
+        </div>
+        <div class="text-blue-400 text-lg">
+          <fa-icon [icon]="twitterIcon"></fa-icon>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
