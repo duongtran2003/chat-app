@@ -30,23 +30,23 @@ class AuthController {
     if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,20}$/.test(password)) {
       res.statusCode = 400;
       return res.json({
-        "messaeg": "nice try dude",
+        "message": "nice try dude",
       });
     }
 
     //check for existance
     const user = await User.findOne({ $or: [{ email: email }, { username: username }] });
     if (user) {
+      if (user.email === email) {
+        res.statusCode = 409; 
+        return res.json({
+          "message": "duplicated email",
+        });
+      }
       if (user.username === username) {
         res.statusCode = 409;
         return res.json({
           "message": "duplicated username",
-        });
-      }
-      if (user.email === email) {
-        res.statusCode = 409;
-        return res.json({
-          "message": "duplicated email",
         });
       }
     }

@@ -13,7 +13,7 @@ connectToDB();
 app.use(cookieParser());
 app.use(cors({
   credentials: true,
-  origin: "*",
+  origin: process.env.FRONTEND_URL,
 }));
 app.use(json());
 app.use(urlencoded({
