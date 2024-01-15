@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.api.get("auth/retrieve", []).subscribe({
       next: (res) => {
-        console.log(res);
+        this.router.navigate(['/']);
       },
       error: (err) => {
         let statusCode = err.status;
@@ -32,9 +32,6 @@ export class AppComponent implements OnInit {
         if (statusCode === 500) {
           this.ngOnInit(); 
         }
-      },
-      complete: () => {
-        console.log('done');
       }
     });
   }
