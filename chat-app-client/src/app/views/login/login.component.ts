@@ -4,11 +4,12 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faGoogle, faFacebook, faTwitter } from '@fortawesome/free-brands-svg-icons';
 import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, FontAwesomeModule, ReactiveFormsModule],
+  imports: [RouterLink, RouterLinkActive, FontAwesomeModule, ReactiveFormsModule, CommonModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
@@ -36,7 +37,6 @@ export class LoginComponent {
       "password": this.loginForm.value.password,
     }).subscribe({
       next: (user) => {
-        console.log(user);
         this.router.navigate(['/']);
       },
       error: (err) => {
