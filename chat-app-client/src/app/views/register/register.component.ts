@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FormControl, ReactiveFormsModule, FormGroup } from '@angular/forms';
-import { ApiService } from '../../services/api.service';
 import { CommonModule } from '@angular/common';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-register',
@@ -13,8 +13,7 @@ import { CommonModule } from '@angular/common';
 })
 export class RegisterComponent {
 
-
-  private api = inject(ApiService);
+  private userService = inject(UserService);
   private router = inject(Router);
   //validator state
   isValid = {
@@ -106,11 +105,14 @@ export class RegisterComponent {
     //validator end
 
     if (this.isValid.email && this.isValid.username && this.isValid.password && this.isValid.passwordConfirm) {
-      this.api.post('auth/register', {
-        "email": this.registerForm.value.email,
-        "username": this.registerForm.value.username,
-        "password": this.registerForm.value.password,
-      }).subscribe({
+      
+      const newUser = {
+        "email": this.registerForm.value.email || "",
+        "username": this.registerForm.value.username || "",
+        "password": this.registerForm.value.password || ""
+      }
+
+      this.userService.newUser(newUser).subscribe({
         next: (user) => {
           this.router.navigate(['/login']);
         },

@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { ApiService } from '../../services/api.service';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-main',
@@ -10,6 +10,27 @@ import { ApiService } from '../../services/api.service';
   styleUrl: './main.component.css'
 })
 export class MainComponent {
-  private api = inject(ApiService);
+  private userService = inject(UserService);
+  private router = inject(Router);
   
+  user: any; 
+
+  constructor() {
+    this.user = this.userService.getUser(); 
+    if (!this.user.length) {
+      this.userService.fetchUser().subscribe({
+        next: (user) => {
+          this.user = user;
+        }
+      });
+    }
+  }
+  
+  logout() {
+    this.userService.logout().subscribe({
+      next: () => {
+        this.router.navigate(['/login']);
+      }
+    });
+  }
 }

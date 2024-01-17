@@ -1,1 +1,2 @@
-<p>Welcome!</p>
+<p>Welcome, {{ this.user.username || "GUEST" }}!</p>
+<button (click)="logout()" type="button">logout</button>

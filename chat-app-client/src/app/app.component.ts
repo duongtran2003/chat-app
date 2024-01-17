@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive, RouterOutlet, Router } from '@angular/router';
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
-import { ApiService } from './services/api.service';
+import { UserService } from './services/user.service';
 
 @Component({
   selector: 'app-root',
@@ -13,14 +13,16 @@ import { ApiService } from './services/api.service';
 })
 export class AppComponent implements OnInit {
   title = 'chat-app-client';
-  private api = inject(ApiService);
+  private userService = inject(UserService);
   private router = inject(Router);
 
   constructor() {  }
   
   ngOnInit(): void {
-    this.api.get("auth/retrieve", []).subscribe({
-      next: (res) => {
+    console.log("app component init");
+    this.userService.fetchUser().subscribe({
+      next: (user) => {
+        this.userService.setUser(user);
         this.router.navigate(['/']);
       },
       error: (err) => {
