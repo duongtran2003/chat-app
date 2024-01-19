@@ -1,6 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { UserService } from '../../services/user.service';
+import { io } from 'socket.io-client';
+import { environment } from '../../../environments/environment.development';
+
 
 @Component({
   selector: 'app-main',
@@ -9,13 +12,17 @@ import { UserService } from '../../services/user.service';
   templateUrl: './main.component.html',
   styleUrl: './main.component.css'
 })
-export class MainComponent {
+export class MainComponent implements OnDestroy {
   private userService = inject(UserService);
   private router = inject(Router);
-  
+
+  private socket: any; 
+
   user: any; 
 
+
   constructor() {
+    this.socket = io(environment.apiUrl, { forceNew: true });
     this.user = this.userService.getUser(); 
     if (!this.user.length) {
       this.userService.fetchUser().subscribe({
@@ -24,9 +31,16 @@ export class MainComponent {
         }
       });
     }
+    this.socket.on('onConnect', (msg: string) => {
+      console.log(msg);
+    });
+  }
+  ngOnDestroy(): void {
+    console.log("main destroyed");
   }
   
   logout() {
+    this.socket.disconnect();
     this.userService.logout().subscribe({
       next: () => {
         this.router.navigate(['/login']);

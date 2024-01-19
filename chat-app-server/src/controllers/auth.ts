@@ -75,7 +75,7 @@ class AuthController {
   }
 
   async login(req: Request, res: Response) {
-    const { username, password, email } = req.body;
+    const { username, password, email } = req.body; 
 
     //in case someone's trying to be real funny here
     if (!(typeof username) || !(typeof password) || !(typeof email)) {
@@ -139,6 +139,13 @@ class AuthController {
         "message": "secret key not found",
       });
     }
+    
+    req.app.get('io').on("connection", (socket: any) => {
+      console.log(`room id: ${user.username}\nsocket id: ${socket.id}\n------------------\n`);
+      socket.join(user.username);
+      req.app.get('io').to(user.username).emit('onConnect', `room id: ${user.username}\nsocket id: ${socket.id}\n------------------\n`);
+    });
+
     const token = jwt.sign({ username: username, userId: user._id }, process.env.SECRET);
     res.cookie('jwt', token, {
       httpOnly: true,

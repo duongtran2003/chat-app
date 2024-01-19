@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import { connect as connectToDB } from "../config/db";
 import { router } from "./routes/index";
+import io from 'socket.io';
 
 dotenv.config();
 
@@ -25,6 +26,15 @@ const port = process.env.PORT;
 app.use(router);
 
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Listening to port ${port}`);
 })
+
+const ioInstance = new io.Server(server, {
+  cors: {
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  }
+});
+
+app.set('io', ioInstance);

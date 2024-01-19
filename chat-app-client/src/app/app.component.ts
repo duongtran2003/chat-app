@@ -19,7 +19,6 @@ export class AppComponent implements OnInit {
   constructor() {  }
   
   ngOnInit(): void {
-    console.log("app component init");
     this.userService.fetchUser().subscribe({
       next: (user) => {
         this.userService.setUser(user);
