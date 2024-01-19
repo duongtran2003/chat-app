@@ -14,7 +14,7 @@ connectToDB();
 app.use(cookieParser());
 app.use(cors({
   credentials: true,
-  origin: process.env.FRONTEND_URL,
+  origin: [process.env.FRONTEND_URL!],
 }));
 app.use(json());
 app.use(urlencoded({
@@ -32,9 +32,13 @@ const server = app.listen(port, () => {
 
 const ioInstance = new io.Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL,
+    origin: [process.env.FRONTEND_URL!],
     credentials: true,
   }
 });
 
 app.set('io', ioInstance);
+
+ioInstance.on('connection', (socket) => {
+  console.log(socket.request.headers.cookie);
+});
