@@ -16,29 +16,29 @@ export class MainComponent implements OnDestroy {
   private userService = inject(UserService);
   private router = inject(Router);
 
-  private socket: any; 
+  private socket: any;
 
-  user: any; 
+  user: any;
 
 
   constructor() {
-    this.socket = io(environment.apiUrl, { forceNew: true });
-    this.user = this.userService.getUser(); 
+    this.user = this.userService.getUser();
     if (!this.user.length) {
       this.userService.fetchUser().subscribe({
         next: (user) => {
           this.user = user;
+          this.socket = io(environment.apiUrl, { forceNew: true, withCredentials: true });
         }
       });
     }
-    this.socket.on('onConnect', (msg: string) => {
-      console.log(msg);
-    });
+    else {
+      this.socket = io(environment.apiUrl, { forceNew: true });
+    }
   }
   ngOnDestroy(): void {
     console.log("main destroyed");
   }
-  
+
   logout() {
     this.socket.disconnect();
     this.userService.logout().subscribe({
