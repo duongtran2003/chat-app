@@ -140,12 +140,6 @@ class AuthController {
       });
     }
     
-    req.app.get('io').on("connection", (socket: any) => {
-      console.log(`room id: ${user.username}\nsocket id: ${socket.id}\n------------------\n`);
-      socket.join(user.username);
-      req.app.get('io').to(user.username).emit('onConnect', `room id: ${user.username}\nsocket id: ${socket.id}\n------------------\n`);
-    });
-
     const token = jwt.sign({ username: username, userId: user._id }, process.env.SECRET);
     res.cookie('jwt', token, {
       httpOnly: true,

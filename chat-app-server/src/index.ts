@@ -5,6 +5,7 @@ import cors from "cors";
 import { connect as connectToDB } from "../config/db";
 import { router } from "./routes/index";
 import io from 'socket.io';
+import getCredFromToken from "./helpers/getCredentialsFromToken";
 
 dotenv.config();
 
@@ -40,5 +41,10 @@ const ioInstance = new io.Server(server, {
 app.set('io', ioInstance);
 
 ioInstance.on('connection', (socket) => {
-  console.log(socket.request.headers.cookie);
+  if (socket.handshake.headers.cookie) {
+    const result = getCredFromToken(socket.handshake.headers.cookie);
+    if (typeof result === "string") {
+      console.log("where token?");
+    }
+  }
 });
