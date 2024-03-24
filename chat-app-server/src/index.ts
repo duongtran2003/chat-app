@@ -45,6 +45,9 @@ ioInstance.on('connection', (socket) => {
     const result = getCredFromToken(socket.handshake.headers.cookie);
     if (typeof result === "string") {
       console.log("where token?");
+      return;
     }
+    socket.join(result.userId);
+    console.log('Connected to room with ID: ' + result.userId);
   }
 });
