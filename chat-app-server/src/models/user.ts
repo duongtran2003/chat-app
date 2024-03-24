@@ -11,8 +11,17 @@ const userSchema = new Schema<IUser> ({
   password: {
     type: String,
   },
-  profilePic: {
+  pfp: {
     type: String,
+    default: `https://i.imgur.com/tdi3NGa.png`,
+  },
+  friends: {
+    type: [Schema.Types.ObjectId],
+    ref: 'User'
+  },
+  conversations: {
+    type: [Schema.Types.ObjectId],
+    ref: 'Conversation'
   }
 }, {
   timestamps: true
