@@ -54,11 +54,14 @@ class AuthController {
     let salt = await bcrypt.genSalt(10);
     let hashedPassword = await bcrypt.hash(password, salt);
 
+
     let newUser: IUser = {
       email: email,
       username: username,
       password: hashedPassword,
-      profilePic: process.env.DEFAULT_PROFILE_PIC || "null",
+      pfp: process.env.DEFAULT_PROFILE_PIC || "null",
+      friends: [],
+      conversations: []
     }
 
     User.create(newUser)

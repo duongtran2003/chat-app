@@ -6,8 +6,8 @@ interface IUser {
   username: string,
   password: string,
   pfp: string,
-  friends: [ObjectId | IUser],
-  conversations: [ObjectId | IConversation]
+  friends: ObjectId[] | IUser [],
+  conversations: ObjectId[] | IConversation[],
   createdAt?: Date,
   updatedAt?: Date,
 }
@@ -21,7 +21,7 @@ interface IMessage {
 }
 
 interface IConversation {
-  members: [ObjectId | IUser]
+  members: ObjectId[] | IUser[],
   lastMessage: String,
   createdAt?: Date,
   updatedAt?: Date,
