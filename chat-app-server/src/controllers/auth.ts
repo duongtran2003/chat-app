@@ -67,6 +67,9 @@ class AuthController {
     User.create(newUser)
       .then((user) => {
         res.statusCode = 201;
+        user.$set({
+          password: undefined
+        })
         return res.json(user);
       })
       .catch((err) => {
@@ -149,6 +152,9 @@ class AuthController {
       maxAge: 1000 * 60 * 60 * 24 * 30,
     });
     res.statusCode = 200;
+    user.$set({
+      password: undefined
+    })
     return res.json(user);
   }
 
@@ -170,6 +176,9 @@ class AuthController {
       .then((user) => {
         if (user) {
           res.statusCode = 200;
+          user.$set({
+            password: undefined
+          });
           return res.json(user);
         }
         else {

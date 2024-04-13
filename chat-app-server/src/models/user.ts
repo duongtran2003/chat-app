@@ -17,11 +17,9 @@ const userSchema = new Schema<IUser> ({
   },
   friends: {
     type: [Schema.Types.ObjectId],
-    ref: 'User'
   },
   conversations: {
     type: [Schema.Types.ObjectId],
-    ref: 'Conversation'
   }
 }, {
   timestamps: true

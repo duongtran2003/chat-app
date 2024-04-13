@@ -4,7 +4,6 @@ import { IMessage } from "../interfaces/dbInterfaces";
 const messageSchema = new Schema<IMessage> ({
   sender: {
     type: Schema.Types.ObjectId,
-    ref: 'User'
   },
   conversationId: {
     type: Schema.Types.ObjectId,

@@ -6,14 +6,14 @@ interface IUser {
   username: string,
   password: string,
   pfp: string,
-  friends: ObjectId[] | IUser [],
-  conversations: ObjectId[] | IConversation[],
+  friends: ObjectId[],
+  conversations: ObjectId[],
   createdAt?: Date,
   updatedAt?: Date,
 }
 
 interface IMessage {
-  sender: ObjectId | IUser,
+  sender: ObjectId,
   conversationId: ObjectId,
   content: string,
   createdAt?: Date,
@@ -21,15 +21,15 @@ interface IMessage {
 }
 
 interface IConversation {
-  members: ObjectId[] | IUser[],
+  members: ObjectId[],
   lastMessage: String,
   createdAt?: Date,
   updatedAt?: Date,
 }
 
 interface IFriendRequest {
-  sender: IUser,
-  recipient: IUser
+  sender: ObjectId,
+  recipient: ObjectId
 }
 
 

@@ -26,7 +26,6 @@ const port = process.env.PORT;
 
 app.use(router);
 
-
 const server = app.listen(port, () => {
   console.log(`Listening to port ${port}`);
 })
