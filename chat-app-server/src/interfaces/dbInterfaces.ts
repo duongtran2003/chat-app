@@ -1,4 +1,4 @@
-import { ObjectId } from "mongoose"
+import mongoose from "mongoose"
 
 
 interface IUser {
@@ -6,30 +6,30 @@ interface IUser {
   username: string,
   password: string,
   pfp: string,
-  friends: ObjectId[],
-  conversations: ObjectId[],
+  friends: mongoose.Types.ObjectId[],
+  conversations: mongoose.Types.ObjectId[],
   createdAt?: Date,
   updatedAt?: Date,
 }
 
 interface IMessage {
-  sender: ObjectId,
-  conversationId: ObjectId,
+  sender: mongoose.Types.ObjectId,
+  conversationId: mongoose.Types.ObjectId,
   content: string,
   createdAt?: Date,
   updatedAt?: Date,
 }
 
 interface IConversation {
-  members: ObjectId[],
+  members: mongoose.Types.ObjectId[],
   lastMessage: String,
   createdAt?: Date,
   updatedAt?: Date,
 }
 
 interface IFriendRequest {
-  sender: ObjectId,
-  recipient: ObjectId
+  sender: mongoose.Types.ObjectId,
+  recipient: mongoose.Types.ObjectId
 }
 
 

@@ -6,7 +6,7 @@ const conversationSchema = new Schema<IConversation> ({
     type: [Schema.Types.ObjectId],
   },
   lastMessage: {
-    type: Schema.Types.ObjectId,
+    type: String,
   }
 }, {
   timestamps: true
