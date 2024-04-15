@@ -1,2 +1,23 @@
-<p>Welcome, {{ this.user.username || "GUEST" }}!</p>
-<button (click)="logout()" type="button">logout</button>
+<div class="flex">
+  <div class="flex min-h-screen w-28 bg-white">
+    <div class="w-1 bg-orange-500 h-16 relative duration-200" [ngClass]="{'top-0': currentTab == 0, 'top-16': currentTab == 1, 'top-32': currentTab == 2, 'top-48': currentTab == 3}"></div>
+    <div class="flex flex-col h-full w-full">
+      <div class="h-16 bg-white cursor-pointer select-none duration-300 hover:bg-orange-100 flex justify-center items-center" (click)="switchTab(0)" [ngClass]="{'bg-orange-100': currentTab == 0}">
+        <fa-icon [icon]="navProfileIcon"></fa-icon>
+      </div>
+      <div class="h-16 bg-white cursor-pointer select-none duration-300 hover:bg-orange-100 flex justify-center items-center" (click)="switchTab(1)" [ngClass]="{'bg-orange-100': currentTab == 1}">
+        <fa-icon [icon]="navFriends"></fa-icon>
+      </div>
+      <div class="h-16 bg-white cursor-pointer select-none duration-300 hover:bg-orange-100 flex justify-center items-center" (click)="switchTab(2)" [ngClass]="{'bg-orange-100': currentTab == 2}">
+        <fa-icon [icon]="navConversation"></fa-icon>
+      </div>
+      <div class="h-16 bg-white cursor-pointer select-none duration-300 hover:bg-orange-100 flex justify-center items-center" (click)="switchTab(3)" [ngClass]="{'bg-orange-100': currentTab == 3}">
+        <fa-icon [icon]="navFriendRequest"></fa-icon>
+      </div>
+      <div class="h-16 mt-auto bg-white cursor-pointer select-none hover:bg-orange-100 flex justify-center items-center" (click)="logout()">
+        <fa-icon class="mr-2" [icon]="navLogout"></fa-icon>
+        Logout
+      </div>
+    </div>
+  </div>
+</div>

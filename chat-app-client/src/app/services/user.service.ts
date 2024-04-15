@@ -22,7 +22,7 @@ export class UserService {
   newUser(user: { "username": string, "email": string, "password": string }): Observable<any> {
     return this.api.post('auth/register', user);
   }
-  
+
   login(credentials: { "username": string, "password": string }): Observable<any> {
     return this.api.post('auth/login', credentials);
   }

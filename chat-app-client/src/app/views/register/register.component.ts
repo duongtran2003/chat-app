@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FormControl, ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -11,7 +11,7 @@ import { UserService } from '../../services/user.service';
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit {
 
   private userService = inject(UserService);
   private router = inject(Router);
@@ -35,6 +35,21 @@ export class RegisterComponent {
     password: new FormControl(""),
     passwordConfirm: new FormControl("")
   });
+
+  ngOnInit(): void {
+    this.userService.fetchUser().subscribe({
+      next: (user) => {
+        this.userService.setUser(user);
+        this.router.navigate(['/']);
+      },
+      error: (err) => {
+        const statusCode = err.status;
+        if (statusCode == 500) {
+          this.ngOnInit();
+        }
+      }
+    });
+  }  
 
   onSubmit(e: SubmitEvent) {
     e.preventDefault();

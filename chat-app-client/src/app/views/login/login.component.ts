@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faGoogle, faFacebook, faTwitter } from '@fortawesome/free-brands-svg-icons';
@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
 
   private userService = inject(UserService);
   private router = inject(Router);
@@ -29,12 +29,27 @@ export class LoginComponent {
     password: new FormControl("")
   });
 
+  ngOnInit(): void {
+    this.userService.fetchUser().subscribe({
+      next: (user) => {
+        this.userService.setUser(user);
+        this.router.navigate(['/']);
+      },
+      error: (err) => {
+        const statusCode = err.status;
+        if (statusCode == 500) {
+          this.ngOnInit();
+        }
+      }
+    });
+  }
+
   onSubmit(e: SubmitEvent) {
     e.preventDefault();
 
     const credentials = {
-      "username": this.loginForm.value.username || "",
-      "password": this.loginForm.value.password || "",
+      username: this.loginForm.value.username || "",
+      password: this.loginForm.value.password || "",
     }
 
     this.userService.login(credentials).subscribe({
