@@ -1,3 +1,5 @@
 <div>
-  friends list goes here
+  @for (friend of currentFriendList; track $index) {
+    <div>{{ friend }}</div>
+  }
 </div>
