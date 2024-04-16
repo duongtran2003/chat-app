@@ -1,5 +1,3 @@
-<div>
   @for (friend of currentFriendList; track $index) {
-    <div>{{ friend }}</div>
+    <app-friend-mini-profile [user]="friend"></app-friend-mini-profile>
   }
-</div>

@@ -1,5 +1,6 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, OnDestroy, inject } from '@angular/core';
 import { ApiService } from './api.service';
+import { Observable, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -7,26 +8,22 @@ import { ApiService } from './api.service';
 export class FriendsService {
   private api = inject(ApiService)
 
-  public friendList: any; 
+  public $friendList = new Subject<any> ();
 
   constructor() { 
-    this.friendList = []; 
   }
   
-  addToFriendList(user: any) {
-    this.friendList.push(user);
-  }
-  
-  getFriendList() {
-    return this.friendList;
-  }
-  
-  isFriend(userId: string) {
-    for (let friend of this.friendList) {
-      if (friend._id == userId) {
-        return true;
-      }
+  fetchFriendList(friendIds: string[]) {
+    for (const friendId of friendIds) {
+      this.api.get('users/' + friendId, []).subscribe({
+        next: (res) => {
+          this.$friendList.next(res);
+        },
+        error: (err) => {
+          console.log(err);
+        }
+      })
     }
-    return false;
   }
+  
 }

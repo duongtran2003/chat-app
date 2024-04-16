@@ -19,6 +19,10 @@ export class UserService {
     return this.api.get('auth/retrieve', []);
   }
   
+  getUserInfo(id: string): Observable<any> {
+    return this.api.get('users/' + id, []);
+  } 
+
   newUser(user: { "username": string, "email": string, "password": string }): Observable<any> {
     return this.api.post('auth/register', user);
   }
