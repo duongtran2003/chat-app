@@ -5,11 +5,14 @@ import { WebsocketService } from '../../services/websocket.service';
 import { CommonModule } from '@angular/common';
 import { faUser, faAddressBook, faComment, faUserPlus, faSignOut } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { SubFriendsColComponent } from '../../components/sub-friends-col/sub-friends-col.component';
+import { SubConversationsColComponent } from '../../components/sub-conversations-col/sub-conversations-col.component';
+import { SubFriendRequestsColComponent } from '../../components/sub-friend-requests-col/sub-friend-requests-col.component';
 
 @Component({
   selector: 'app-main',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule, FontAwesomeModule],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule, FontAwesomeModule, SubFriendsColComponent, SubConversationsColComponent, SubFriendRequestsColComponent],
   templateUrl: './main.component.html',
   styleUrl: './main.component.css'
 })
@@ -25,12 +28,16 @@ export class MainComponent implements OnDestroy, OnInit {
   navFriendRequest = faUserPlus;
   navLogout = faSignOut;
 
+
+
   user: any;
   currentTab: 0 | 1 | 2 | 3; 
+  currentSubColTab: 0 | 1 | 2 | 3;
 
   constructor() {
     this.user = {};
     this.currentTab = 0;
+    this.currentSubColTab = 0;
   }
   
   ngOnInit(): void {
@@ -66,6 +73,6 @@ export class MainComponent implements OnDestroy, OnInit {
   
   switchTab(tab: 0 | 1 | 2 | 3) {
     this.currentTab = tab;
+    this.currentSubColTab = tab;
   }
-
 }
