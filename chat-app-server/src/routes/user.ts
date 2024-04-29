@@ -8,6 +8,7 @@ const userController = new UserController();
 
 
 router.get('/:id', jwtGuard, userController.index);
+router.post('/', jwtGuard, userController.update);
 
 export {
   router
