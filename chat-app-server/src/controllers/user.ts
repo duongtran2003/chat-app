@@ -20,15 +20,15 @@ class UserController {
       const result = await bcrypt.compare(oldPassword, userToUpdate!.password);
       if (!result) {
         return res.status(400).json({
-          "message": "Sai mat khau cu",
+          "message": "Incorrect password",
         });
       }
     }
     if (username) {
       const user = await User.findOne({ username: username });
-      if (user) {
+      if (user && user._id != userId) {
         return res.status(400).json({
-          "message": "Trung username",
+          "message": "Duplicated username",
         });
       }
     }

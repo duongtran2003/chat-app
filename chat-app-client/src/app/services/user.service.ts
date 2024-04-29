@@ -15,6 +15,10 @@ export class UserService {
     this.currentUser = {};
   }
 
+  updateUser(payload: any): Observable<any> {
+    return this.api.post('users/', payload);
+  }
+
   fetchUser(): Observable<any> {
     return this.api.get('auth/retrieve', []);
   }

@@ -1,9 +1,9 @@
 <div class="flex justify-center items-center h-full bg-gray-200">
-  <div class="bg-white h-[80%] w-[40%] rounded-lg shadow-xl flex flex-col p-6">
+  <div class="bg-white h-[90%] w-[40%] rounded-lg shadow-xl flex flex-col p-4">
     <div class="flex justify-center">
       <img class="h-32 w-32 rounded-full border-2 border-orange-300" src="{{ currentProfile.pfp }}">
     </div>
-    <div class="flex justify-center flex-col items-center pt-8">
+    <div class="flex justify-center flex-col items-center pt-4">
       <div class="rounded-sm bg-orange-100 px-6 py-1 mb-2">
         <fa-icon [icon]="usernameIcon" class="mr-2"></fa-icon>
         {{ currentProfile.username }}
@@ -14,18 +14,60 @@
       </div>
     </div>
     @if (currentProfile._id == currentUser._id) {
-      @if (!isEditFieldVisible) {
-        <div (click)="toggleEdit()" class="rounded-sm px-4 py-1 bg-orange-400 text-white hover:bg-orange-500 w-fit mx-auto mt-4 cursor-pointer select-none duration-200">Edit</div>
-      }
-      @else {
-        <div class="flex justify-center flex-col items-center pt-8">
-          edit goes here
-        </div>
-        <div class="flex justify-end mr-4">
-          <div (click)="toggleEdit()" class="rounded-sm px-4 py-1 bg-green-500 text-white hover:bg-green-600 mr-2 w-fit cursor-pointer select-none duration-200">Submit</div>
-          <div (click)="toggleEdit()" class="rounded-sm px-4 py-1 bg-red-500 text-white hover:bg-red-600 w-fit cursor-pointer select-none duration-200">Cancel</div>
-        </div>
-      }
+    @if (!isEditFieldVisible) {
+    <div (click)="toggleEdit()"
+      class="rounded-sm px-4 py-1 bg-orange-400 text-white hover:bg-orange-500 w-fit mx-auto mt-4 cursor-pointer select-none duration-200">
+      Edit</div>
+    }
+    @else {
+    <div class="flex justify-center flex-col items-center pt-4">
+      <div class="max-w-[60%] min-w-[60%]">
+        <div class="text-sm">Username:</div>
+        <input type="text" placeholder="New username" [(ngModel)]="formValue.username"
+          class="text-sm w-full outline-none px-2 py-1 border hover:border-orange-500 focus:border-orange-500 focus:rounded-sm duration-200"
+          [ngClass]="{'border-red-600': !isValid.username, 'border-gray-300': isValid.username}">
+          @if (!isValid.username) {
+            <div class="text-xs text-red-600">{{ isValid.usernameErr }}</div>
+          }
+      </div>
+      <div class="max-w-[60%] min-w-[60%]">
+        <div class="text-sm">Email:</div>
+        <input type="text" placeholder="New email" [(ngModel)]="formValue.email"
+          class="text-sm w-full outline-none px-2 py-1 border hover:border-orange-500 focus:border-orange-500 focus:rounded-sm duration-200"
+          [ngClass]="{'border-red-600': !isValid.email, 'border-gray-300': isValid.email}">
+          @if (!isValid.email) {
+            <div class="text-xs text-red-600">{{ isValid.emailErr }}</div>
+          }
+      </div>
+      <div class="max-w-[60%] min-w-[60%]">
+        <div class="text-sm">Avatar:</div>
+        <input type="text" placeholder="Link to img" [(ngModel)]="formValue.avatar"
+          class="text-sm w-full outline-none px-2 py-1 border border-gray-300 hover:border-orange-500 focus:border-orange-500 focus:rounded-sm duration-200">
+      </div>
+      <div class="max-w-[60%] min-w-[60%]">
+        <div class="text-sm">Password:</div>
+        <input type="text" placeholder="New password" [(ngModel)]="formValue.password"
+          class="text-sm w-full outline-none px-2 py-1 border hover:border-orange-500 focus:border-orange-500 focus:rounded-sm duration-200"
+          [ngClass]="{'border-red-600': !isValid.password, 'border-gray-300': isValid.password}">
+          @if (!isValid.password) {
+            <div class="text-xs text-red-600">{{ isValid.passwordErr }}</div>
+          }
+      </div>
+      <div class="max-w-[60%] min-w-[60%]">
+        <div class="text-sm">Old password:</div>
+        <input type="text" placeholder="Old password" [(ngModel)]="formValue.oldPassowrd"
+          class="text-sm w-full outline-none px-2 py-1 border border-gray-300 hover:border-orange-500 focus:border-orange-500 focus:rounded-sm duration-200">
+      </div>
+    </div>
+    <div class="flex justify-end mr-4 mt-2">
+      <div (click)="submit()"
+        class="rounded-sm px-4 py-1 bg-green-500 text-white hover:bg-green-600 mr-2 w-fit cursor-pointer select-none duration-200">
+        Submit</div>
+      <div (click)="toggleEdit()"
+        class="rounded-sm px-4 py-1 bg-red-500 text-white hover:bg-red-600 w-fit cursor-pointer select-none duration-200">
+        Cancel</div>
+    </div>
+    }
     }
   </div>
 </div>
