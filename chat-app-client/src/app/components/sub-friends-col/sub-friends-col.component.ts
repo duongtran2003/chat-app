@@ -22,12 +22,12 @@ export class SubFriendsColComponent implements OnInit, OnDestroy {
   } 
 
   ngOnInit(): void {
-    this.friendListService.fetchFriendList(this.userService.getUser().friends);
-    this.friendListService.$friendList.subscribe({
+    this.friendListService.friendList$.subscribe({
       next: (res) => {
         this.currentFriendList.push(res);
       }
     });
+    this.friendListService.fetchFriendList(this.userService.getUser().friends);
   }
   ngOnDestroy(): void {
     console.log("destroyed");

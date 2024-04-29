@@ -1,0 +1,31 @@
+<div class="flex justify-center items-center h-full bg-gray-200">
+  <div class="bg-white h-[80%] w-[40%] rounded-lg shadow-xl flex flex-col p-6">
+    <div class="flex justify-center">
+      <img class="h-32 w-32 rounded-full border-2 border-orange-300" src="{{ currentProfile.pfp }}">
+    </div>
+    <div class="flex justify-center flex-col items-center pt-8">
+      <div class="rounded-sm bg-orange-100 px-6 py-1 mb-2">
+        <fa-icon [icon]="usernameIcon" class="mr-2"></fa-icon>
+        {{ currentProfile.username }}
+      </div>
+      <div class="rounded-sm bg-orange-100 px-6 py-1">
+        <fa-icon [icon]="emailIcon" class="mr-2"></fa-icon>
+        {{ currentProfile.email }}
+      </div>
+    </div>
+    @if (currentProfile._id == currentUser._id) {
+      @if (!isEditFieldVisible) {
+        <div (click)="toggleEdit()" class="rounded-sm px-4 py-1 bg-orange-400 text-white hover:bg-orange-500 w-fit mx-auto mt-4 cursor-pointer select-none duration-200">Edit</div>
+      }
+      @else {
+        <div class="flex justify-center flex-col items-center pt-8">
+          edit goes here
+        </div>
+        <div class="flex justify-end mr-4">
+          <div (click)="toggleEdit()" class="rounded-sm px-4 py-1 bg-green-500 text-white hover:bg-green-600 mr-2 w-fit cursor-pointer select-none duration-200">Submit</div>
+          <div (click)="toggleEdit()" class="rounded-sm px-4 py-1 bg-red-500 text-white hover:bg-red-600 w-fit cursor-pointer select-none duration-200">Cancel</div>
+        </div>
+      }
+    }
+  </div>
+</div>

@@ -8,7 +8,7 @@ import { Observable, Subject } from 'rxjs';
 export class FriendsService {
   private api = inject(ApiService)
 
-  public $friendList = new Subject<any> ();
+  public friendList$ = new Subject<any> ();
 
   constructor() { 
   }
@@ -17,7 +17,7 @@ export class FriendsService {
     for (const friendId of friendIds) {
       this.api.get('users/' + friendId, []).subscribe({
         next: (res) => {
-          this.$friendList.next(res);
+          this.friendList$.next(res);
         },
         error: (err) => {
           console.log(err);

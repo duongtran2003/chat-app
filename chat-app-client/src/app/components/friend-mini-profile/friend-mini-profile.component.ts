@@ -1,4 +1,5 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
+import { MainColService } from '../../services/main-col.service';
 
 @Component({
   selector: 'app-friend-mini-profile',
@@ -9,4 +10,9 @@ import { Component, Input } from '@angular/core';
 })
 export class FriendMiniProfileComponent {
   @Input() user: any;
+  private mainCol = inject(MainColService);
+
+  showProfile() {
+    this.mainCol.switchTab(1, this.user._id);
+  }
 }
