@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { MainColService } from '../../services/main-col.service';
 import { UserService } from '../../services/user.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faAt, faCircleUser } from '@fortawesome/free-solid-svg-icons';
+import { faAt, faCircleUser, faEnvelope, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ToastrService, provideToastr } from 'ngx-toastr';
@@ -22,6 +22,8 @@ export class ProfileMainComponent implements OnInit {
 
   emailIcon = faAt;
   usernameIcon = faCircleUser;
+  addFriendIcon = faUserPlus;
+  sendMessageIcon = faEnvelope;
   isEditFieldVisible = false;
 
   isValid = {
@@ -43,13 +45,16 @@ export class ProfileMainComponent implements OnInit {
 
   currentUser: any = {};
   currentProfile: any = {};
+  isFriend: boolean;
 
   constructor() {
+    this.isFriend = false;
     this.currentUser = this.userService.getUser();
     this.userService.getUserInfo(this.mainCol.getCurrentTabId()).subscribe({
       next: (user) => {
         this.currentProfile = user;
         console.log(user);
+        this.isFriend = this.userService.isFriend(this.currentProfile._id);
       }
     });
   }
@@ -60,7 +65,7 @@ export class ProfileMainComponent implements OnInit {
         this.userService.getUserInfo(id).subscribe({
           next: (user) => {
             this.currentProfile = user;
-            console.log(user);
+            this.isFriend = this.userService.isFriend(this.currentProfile._id);
           }
         });
       }

@@ -41,9 +41,14 @@ export class UserService {
   
   setUser(user: any) {
     this.currentUser = user;
+    console.log("current user:" , user);
   }
   
   getUser(): any {
     return this.currentUser;
+  }
+
+  isFriend(id: string) {
+    return this.currentUser.friends.includes(id);
   }
 }
