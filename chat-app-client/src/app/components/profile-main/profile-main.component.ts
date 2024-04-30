@@ -5,18 +5,20 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faAt, faCircleUser } from '@fortawesome/free-solid-svg-icons';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ToastrService, provideToastr } from 'ngx-toastr';
 
 @Component({
   selector: 'app-profile-main',
   standalone: true,
   imports: [FontAwesomeModule, CommonModule, FormsModule],
   templateUrl: './profile-main.component.html',
-  styleUrl: './profile-main.component.css'
+  styleUrl: './profile-main.component.css',
 })
 export class ProfileMainComponent implements OnInit {
   
   private mainCol = inject(MainColService);
   private userService = inject(UserService);
+  private toastr = inject(ToastrService);
 
   emailIcon = faAt;
   usernameIcon = faCircleUser;
@@ -117,13 +119,16 @@ export class ProfileMainComponent implements OnInit {
       this.userService.updateUser(payload).subscribe({
         next: (res) => {
           console.log(res);
-          alert("thanh cong");
+          // alert("thanh cong");
+          this.toastr.success("You've successfully updated your profile", "Success");
           this.currentProfile = res;
           this.userService.setUser(res);
           this.currentUser = res;
+          this.isEditFieldVisible = !this.isEditFieldVisible;
         },
         error: (err) => {
-          alert(err.error.message);
+          // alert(err.error.message);
+          this.toastr.error(err.error.message, "Error");
         }
       })
     }

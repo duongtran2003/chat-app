@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive, RouterOutlet, Router } from '@angular/router';
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { UserService } from './services/user.service';
+import { bootstrapApplication } from '@angular/platform-browser';
+
+
 
 @Component({
   selector: 'app-root',
