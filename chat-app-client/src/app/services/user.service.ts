@@ -7,12 +7,16 @@ import { Observable } from 'rxjs';
 })
 export class UserService {
   private api = inject(ApiService);
-  
-  
+
+
   public currentUser: any
 
-  constructor() { 
+  constructor() {
     this.currentUser = {};
+  }
+
+  getUsers(name: string) {
+    return this.api.get('users/', [["name", name]]);
   }
 
   updateUser(payload: any): Observable<any> {
@@ -22,10 +26,10 @@ export class UserService {
   fetchUser(): Observable<any> {
     return this.api.get('auth/retrieve', []);
   }
-  
+
   getUserInfo(id: string): Observable<any> {
     return this.api.get('users/' + id, []);
-  } 
+  }
 
   newUser(user: { "username": string, "email": string, "password": string }): Observable<any> {
     return this.api.post('auth/register', user);
@@ -34,16 +38,16 @@ export class UserService {
   login(credentials: { "username": string, "password": string }): Observable<any> {
     return this.api.post('auth/login', credentials);
   }
-  
+
   logout(): Observable<any> {
     return this.api.get('auth/logout', []);
   }
-  
+
   setUser(user: any) {
     this.currentUser = user;
-    console.log("current user:" , user);
+    console.log("current user:", user);
   }
-  
+
   getUser(): any {
     return this.currentUser;
   }

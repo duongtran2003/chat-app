@@ -17,14 +17,15 @@
           <fa-icon class="mr-2" [icon]="sendMessageIcon"></fa-icon>
           Send message
         </div>
-        <div class="bg-orange-400 text-white hover:bg-orange-500 duration-200 flex px-4 py-2 justify-center items-center rounded-sm cursor-pointer select-none">
-          <fa-icon class="mr-2" [icon]="addFriendIcon"></fa-icon>
-          Add friend
-        </div>
       </div>
     }
-    @else {
-      
+    @if (!isFriend && currentProfile._id != currentUser._id) {
+      <div class="flex justify-center mt-2">
+        <div class="bg-orange-400 text-white hover:bg-orange-500 duration-200 flex px-4 py-2 justify-center items-center rounded-sm cursor-pointer select-none">
+          <fa-icon class="mr-2" [icon]="addFriendIcon"></fa-icon>
+	        Add friend
+        </div>
+      </div>
     }
     @if (currentProfile._id == currentUser._id) {
     @if (!isEditFieldVisible) {

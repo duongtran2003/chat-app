@@ -1,3 +1,13 @@
+  <div class="w-full flex h-fit">
+    <input type="text" class="w-full outline-none bg-gray-200 px-2 py-1" [(ngModel)]="searchValue">
+    <button>
+      <fa-icon [icon]=searchIcon (click)="searchUser()" class="px-2 py-2 text-white bg-orange-400 hover:bg-orange-500 duration-200 cursor-pointer"></fa-icon>
+    </button>
+    <button>
+      <fa-icon [icon]=cancelIcon (click)="showFriends()" class="px-2 py-2 text-white bg-orange-400 hover:bg-orange-500 duration-200 cursor-pointer"></fa-icon>
+    </button>
+  </div>
   @for (friend of currentFriendList; track $index) {
     <app-friend-mini-profile [user]="friend"></app-friend-mini-profile>
   }
+

@@ -5,11 +5,15 @@ import bcrypt from 'bcrypt';
 class UserController {
   async index(req: Request, res: Response) {
     const userId = req.params.id;
-    const user = await User.findById(userId);
-    user?.$set({
-      password: undefined
-    });
-    return res.status(200).json(user);
+    const usernameAlike = req.query.name;
+    if (userId) {
+      const user = await User.findById(userId, { password: 0 });
+      return res.status(200).json(user);
+    }
+    else {
+      const users = await User.find({ username: { $regex: ".*" + usernameAlike + ".*" } }, { password: 0 });
+      return res.status(200).json(users);
+    }
   }
 
   async update(req: Request, res: Response) {
@@ -45,18 +49,18 @@ class UserController {
     }
     if (password) {
       const salt = await bcrypt.genSalt(10);
-      const hashedPassword =  await bcrypt.hash(password, salt);
+      const hashedPassword = await bcrypt.hash(password, salt);
       updatedUser.password = hashedPassword;
     }
     User.findByIdAndUpdate(userId, updatedUser, { new: true })
-    .then((updated) => {
-      return res.status(200).json(updated);
-    })
-    .catch((err) => {
-      return res.status(500).json({
-        "message": "server error",
-      });
-    })
+      .then((updated) => {
+        return res.status(200).json(updated);
+      })
+      .catch((err) => {
+        return res.status(500).json({
+          "message": "server error",
+        });
+      })
   }
 }
 
