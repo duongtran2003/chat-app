@@ -55,4 +55,8 @@ export class UserService {
   isFriend(id: string) {
     return this.currentUser.friends.includes(id);
   }
+
+  addNewFriend(id: string) {
+    this.currentUser.friends.push(id);
+  }
 }

@@ -2,10 +2,11 @@ import { Component, OnInit, inject } from '@angular/core';
 import { MainColService } from '../../services/main-col.service';
 import { UserService } from '../../services/user.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faAt, faCircleUser, faEnvelope, faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import { faAt, faCircleUser, faEnvelope, faUserPlus, faXmark, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ToastrService, provideToastr } from 'ngx-toastr';
+import { ToastrService } from 'ngx-toastr';
+import { FriendRequestService } from '../../services/friend-request.service';
 
 @Component({
   selector: 'app-profile-main',
@@ -15,16 +16,22 @@ import { ToastrService, provideToastr } from 'ngx-toastr';
   styleUrl: './profile-main.component.css',
 })
 export class ProfileMainComponent implements OnInit {
-  
+
   private mainCol = inject(MainColService);
   private userService = inject(UserService);
   private toastr = inject(ToastrService);
+  private friendRequestService = inject(FriendRequestService);
 
   emailIcon = faAt;
   usernameIcon = faCircleUser;
   addFriendIcon = faUserPlus;
   sendMessageIcon = faEnvelope;
+  cancelIcon = faXmark;
+  acceptIcon = faCheck;
+
   isEditFieldVisible = false;
+
+  notFriendStatus = 0 | 1 | -1; // 0 - not friend, 1 - request sent, -1 - request received
 
   isValid = {
     email: true,
@@ -50,22 +57,26 @@ export class ProfileMainComponent implements OnInit {
   constructor() {
     this.isFriend = false;
     this.currentUser = this.userService.getUser();
+    this.checkFriendStatus();
     this.userService.getUserInfo(this.mainCol.getCurrentTabId()).subscribe({
       next: (user) => {
         this.currentProfile = user;
-        console.log(user);
         this.isFriend = this.userService.isFriend(this.currentProfile._id);
+        this.checkFriendStatus();
       }
     });
   }
 
   ngOnInit(): void {
+    this.checkFriendStatus();
     this.mainCol.currentMainTabId$.subscribe({
       next: (id) => {
         this.userService.getUserInfo(id).subscribe({
           next: (user) => {
+            console.log(user);
             this.currentProfile = user;
             this.isFriend = this.userService.isFriend(this.currentProfile._id);
+            this.checkFriendStatus();
           }
         });
       }
@@ -112,7 +123,7 @@ export class ProfileMainComponent implements OnInit {
     else {
       this.isValid.password = true;
     }
-    
+
     if (this.isValid.username && this.isValid.email && this.isValid.password) {
       const payload = {
         username: this.formValue.username == "" ? undefined : this.formValue.username,
@@ -137,5 +148,92 @@ export class ProfileMainComponent implements OnInit {
         }
       })
     }
+  }
+
+  checkFriendStatus() {
+    if (!this.currentProfile._id) {
+      return;
+    }
+    this.friendRequestService.checkRequest(this.currentProfile._id).subscribe({
+      next: (res) => {
+        console.log(res);
+        if (res.sender == this.currentUser._id) {
+          this.notFriendStatus = 1;
+        }
+        if (res.recipient == this.currentUser._id) {
+          this.notFriendStatus = -1;
+        }
+      },
+      error: (error) => {
+        this.notFriendStatus = 0;
+        console.log(error);
+      }
+    })
+  }
+
+  sendFriendRequest() {
+    if (!this.currentProfile._id) {
+      return;
+    }
+    this.friendRequestService.sendFriendRequest(this.currentProfile._id).subscribe({
+      next: (res) => {
+        this.checkFriendStatus();
+      }
+    });
+  }
+
+  deleteFriendRequest() {
+    if (!this.currentProfile._id) {
+      return;
+    }
+    this.friendRequestService.deleteFriendRequest(this.currentProfile._id).subscribe({
+      next: (res) => {
+        this.notFriendStatus = 0;
+      },
+      error: () => {
+        this.toastr.error("Request not found", "Error");
+        this.ngOnInit();
+      },
+      complete: () => {
+        this.friendRequestService.fetchAllRequests();
+      }
+    })
+  }
+
+  declineFriendRequest() {
+    if (!this.currentProfile._id) {
+      return;
+    }
+    this.friendRequestService.declineFriendRequest(this.currentProfile._id).subscribe({
+      next: (res) => {
+        this.notFriendStatus = 0;
+      },
+      error: () => {
+        this.toastr.error("Request not found", "Error");
+        this.ngOnInit();
+      },
+      complete: () => {
+        this.friendRequestService.fetchAllRequests();
+      }
+    })
+  }
+
+  acceptFriendRequest() {
+    if (!this.currentProfile._id) {
+      return;
+    }
+    this.friendRequestService.acceptFriendRequest(this.currentProfile._id).subscribe({
+      next: (res) => {
+        this.isFriend = true;
+        this.userService.addNewFriend(this.currentProfile._id);
+      },
+      error: () => {
+        this.toastr.error("Request not found", "Error");
+        this.ngOnInit();
+      },
+      complete: () => {
+        this.friendRequestService.fetchAllRequests();
+      }
+    })
   }
 }

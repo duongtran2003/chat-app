@@ -8,6 +8,7 @@ const router = Router();
 router.post('/create', jwtGuard, friendRequestController.create);
 router.post('/handleRequest', jwtGuard, friendRequestController.handleRequest);
 router.get('/', jwtGuard, friendRequestController.index);
+router.delete('/', jwtGuard, friendRequestController.delete);
 
 export {
   router

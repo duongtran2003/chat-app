@@ -1,4 +1,4 @@
-<div class="bg-amber-600 bg-opacity-80 min-h-screen p-1">
+<div class="bg-amber-200 bg-opacity-80 min-h-screen p-1">
   <div class="bg-white px-12 py-12 mt-16 w-fit mx-auto flex flex-col rounded-lg shadow-2xl">
     <div class="flex font-bold text-2xl">Create an account</div>
     <form class="flex flex-col w-64 mb-4 mt-8" [formGroup]="registerForm" (ngSubmit)="onSubmit($event)">
@@ -27,7 +27,7 @@
         <div class="text-xs text-red-600">{{ isValid.passwordConfirmErr }}</div>
       }
       <button type="submit"
-        class="mt-6 px-8 py-2 bg-amber-500 hover:bg-amber-600 duration-200 rounded-sm text-white font-light select-none">REGISTER</button>
+        class="mt-6 px-8 py-2 bg-amber-500 hover:bg-amber-600 duration-200 rounded-sm text-white font-bold select-none">REGISTER</button>
     </form>
     <div class="flex justify-between text-xs">
       <div>

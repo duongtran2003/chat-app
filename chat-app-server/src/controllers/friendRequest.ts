@@ -36,6 +36,7 @@ class FriendRequestController {
     const otherUserId = req.query.id;
     if (!otherUserId) {
       const requests = await FriendRequest.find({ recipient: userId });
+      return res.status(200).json(requests);
     }
     else {
       const request1 = await FriendRequest.findOne({ sender: userId, recipient: otherUserId });
@@ -52,25 +53,53 @@ class FriendRequestController {
   }
 
   async handleRequest(req: Request, res: Response) {
-    const { requestId, action } = req.body;
-    const friendRequest = await FriendRequest.findById(requestId);
-    const targetId = friendRequest!.recipient;
+    const { otherUserId, action } = req.body;
+    const userId = res.locals.claims.userId;
+    const friendRequest = await FriendRequest.findOne({ sender: otherUserId, recipient: userId });
+    if (!friendRequest) {
+      return res.status(404).json({
+        message: "Request not found",
+      });
+    }
+    const senderId = friendRequest!.sender;
 
     if (action == "accept") {
       const userId = res.locals.claims.userId;
       const user = await User.findById(userId);
-      const targetUser = await User.findById(targetId);
-      user?.friends.push(targetId);
-      targetUser?.friends.push(userId);
+      const sender = await User.findById(senderId);
+      user?.friends.push(senderId);
+      sender?.friends.push(userId);
       user?.save();
-      targetUser?.save();
-      await FriendRequest.findByIdAndDelete(requestId);
+      sender?.save();
+      await FriendRequest.findOneAndDelete({ sender: otherUserId, recipient: userId });
       return res.status(200).json({ "message": "success" });
     }
     else {
-      await FriendRequest.findByIdAndDelete(requestId);
+      await FriendRequest.findOneAndDelete({ sender: otherUserId, recipient: userId });
       return res.status(200).json({ "message": "success" });
     }
+  }
+
+  async delete(req: Request, res: Response) {
+    const userId = res.locals.claims.userId;
+    const otherUserId = req.query.id;
+    const friendRequest = await FriendRequest.findOne({ sender: userId, recipient: otherUserId });
+    if (!friendRequest) {
+      return res.status(404).json({
+        message: "Request not found",
+      });
+    }
+    FriendRequest.findOneAndDelete({ sender: userId, recipient: otherUserId })
+      .then(() => {
+        return res.status(200).json({
+          message: "Success",
+        })
+      })
+      .catch(() => {
+        return res.status(500).json({
+          message: "Error"
+        })
+      });
   }
 }
 

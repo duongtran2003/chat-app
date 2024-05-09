@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FormControl, ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ToastrService } from 'ngx-toastr';
 import { UserService } from '../../services/user.service';
 
 @Component({
@@ -15,6 +16,8 @@ export class RegisterComponent implements OnInit {
 
   private userService = inject(UserService);
   private router = inject(Router);
+  private toastr = inject(ToastrService);
+
   //validator state
   isValid = {
     email: true,
@@ -49,7 +52,7 @@ export class RegisterComponent implements OnInit {
         }
       }
     });
-  }  
+  }
 
   onSubmit(e: SubmitEvent) {
     e.preventDefault();
@@ -120,7 +123,7 @@ export class RegisterComponent implements OnInit {
     //validator end
 
     if (this.isValid.email && this.isValid.username && this.isValid.password && this.isValid.passwordConfirm) {
-      
+
       const newUser = {
         "email": this.registerForm.value.email || "",
         "username": this.registerForm.value.username || "",
@@ -129,6 +132,7 @@ export class RegisterComponent implements OnInit {
 
       this.userService.newUser(newUser).subscribe({
         next: (user) => {
+          this.toastr.success("You've successfully created a new account");
           this.router.navigate(['/login']);
         },
         error: (err) => {

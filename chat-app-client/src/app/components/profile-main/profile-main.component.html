@@ -1,4 +1,4 @@
-<div class="flex justify-center items-center h-full bg-gray-200">
+<div class="flex justify-center items-center h-full bg-gray-100">
   <div class="bg-white h-[90%] w-[40%] rounded-lg shadow-xl flex flex-col p-4">
     <div class="flex justify-center">
       <img class="h-32 w-32 rounded-full border-2 border-orange-300" src="{{ currentProfile.pfp }}">
@@ -20,12 +20,36 @@
       </div>
     }
     @if (!isFriend && currentProfile._id != currentUser._id) {
-      <div class="flex justify-center mt-2">
-        <div class="bg-orange-400 text-white hover:bg-orange-500 duration-200 flex px-4 py-2 justify-center items-center rounded-sm cursor-pointer select-none">
-          <fa-icon class="mr-2" [icon]="addFriendIcon"></fa-icon>
-	        Add friend
+      @if (notFriendStatus == 1) {
+        <div class="text-center">You've sent them a friend request</div>
+        <div class="flex justify-center mt-2">
+          <div (click)="deleteFriendRequest()" class="bg-red-400 text-white hover:bg-red-500 duration-200 flex px-4 py-2 justify-center items-center rounded-sm cursor-pointer select-none">
+            <fa-icon class="mr-2" [icon]="cancelIcon"></fa-icon>
+            Cancel
+          </div>
         </div>
-      </div>
+      }
+      @else if (notFriendStatus == -1) {
+        <div class="text-center">They've sent you a friend request</div>
+        <div class="flex justify-center mt-2">
+          <div (click)="acceptFriendRequest()" class="mr-2 bg-green-400 text-white hover:bg-green-500 duration-200 flex px-4 py-2 justify-center items-center rounded-sm cursor-pointer select-none">
+            <fa-icon class="mr-2" [icon]="acceptIcon"></fa-icon>
+            Accept
+          </div>
+          <div (click)="declineFriendRequest()" class="bg-red-400 text-white hover:bg-red-500 duration-200 flex px-4 py-2 justify-center items-center rounded-sm cursor-pointer select-none">
+            <fa-icon class="mr-2" [icon]="cancelIcon"></fa-icon>
+            Decline
+          </div>
+        </div>
+      }
+      @else {
+        <div class="flex justify-center mt-2">
+          <div (click)="sendFriendRequest()" class="bg-orange-400 text-white hover:bg-orange-500 duration-200 flex px-4 py-2 justify-center items-center rounded-sm cursor-pointer select-none">
+            <fa-icon class="mr-2" [icon]="addFriendIcon"></fa-icon>
+            Add friend
+          </div>
+        </div>
+      }
     }
     @if (currentProfile._id == currentUser._id) {
     @if (!isEditFieldVisible) {
