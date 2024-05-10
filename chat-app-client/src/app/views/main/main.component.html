@@ -1,24 +1,30 @@
 <div class="flex">
-  <div class="flex min-h-screen w-[7%] bg-white">
+  <div class="flex min-h-screen w-[7%] bg-white border-r-orange-100 border-r-2">
     <div class="w-1 bg-orange-500 h-16 relative duration-200"
       [ngClass]="{'top-0': currentTab == 0, 'top-16': currentTab == 1, 'top-32': currentTab == 2, 'top-48': currentTab == 3}">
     </div>
     <div class="flex flex-col h-full w-full">
-      <div class="h-16 cursor-pointer select-none duration-300 hover:bg-orange-200 flex justify-center items-center"
+      <div class="relative h-16 cursor-pointer select-none duration-300 hover:bg-orange-200 flex justify-center items-center"
         (click)="switchTab(0)" [ngClass]="{'bg-orange-100': currentTab == 0}">
         <fa-icon [icon]="navProfileIcon"></fa-icon>
       </div>
-      <div class="h-16 cursor-pointer select-none duration-300 hover:bg-orange-200 flex justify-center items-center"
+      <div class="relative h-16 cursor-pointer select-none duration-300 hover:bg-orange-200 flex justify-center items-center"
         (click)="switchTab(1)" [ngClass]="{'bg-orange-100': currentTab == 1}">
         <fa-icon [icon]="navFriends"></fa-icon>
       </div>
-      <div class="h-16 cursor-pointer select-none duration-300 hover:bg-orange-200 flex justify-center items-center"
+      <div class="relative h-16 cursor-pointer select-none duration-300 hover:bg-orange-200 flex justify-center items-center"
         (click)="switchTab(2)" [ngClass]="{'bg-orange-100': currentTab == 2}">
         <fa-icon [icon]="navConversation"></fa-icon>
+        @if (hasNewConversation) {
+          <div class="absolute top-0 right-8 text-5xl text-red-600">•</div>
+        }
       </div>
-      <div class="h-16 cursor-pointer select-none duration-300 hover:bg-orange-200 flex justify-center items-center"
+      <div class="relative h-16 cursor-pointer select-none duration-300 hover:bg-orange-200 flex justify-center items-center"
         (click)="switchTab(3)" [ngClass]="{'bg-orange-100': currentTab == 3}">
         <fa-icon [icon]="navFriendRequest"></fa-icon>
+        @if (hasNewRequest) {
+          <div class="absolute top-0 right-8 text-5xl text-red-600">•</div>
+        }
       </div>
       <div class="h-16 mt-auto bg-white cursor-pointer select-none hover:bg-orange-200 flex justify-center items-center"
         (click)="logout()">
@@ -41,9 +47,9 @@
   <div class="flex min-h-screen w-[73%]">
     @if (currentMainTab == 1) {
       <app-profile-main class="w-full"></app-profile-main>
-    } 
+    }
     @if (currentMainTab == 2) {
       <app-conversation-main class="w-full"></app-conversation-main>
-    } 
+    }
   </div>
 </div>

@@ -11,6 +11,7 @@ import { FriendRequestComponent } from '../friend-request/friend-request.compone
 })
 export class SubFriendRequestsColComponent implements OnInit {
   private requestService = inject(FriendRequestService);
+
   requestList: any[];
 
   constructor() {

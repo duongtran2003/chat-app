@@ -5,6 +5,7 @@ import { FriendMiniProfileComponent } from '../friend-mini-profile/friend-mini-p
 import { faMagnifyingGlass, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule } from '@angular/forms';
+import { WebsocketService } from '../../services/websocket.service';
 
 @Component({
   selector: 'app-sub-friends-col',
@@ -16,6 +17,7 @@ import { FormsModule } from '@angular/forms';
 export class SubFriendsColComponent implements OnInit, OnDestroy {
   private userService = inject(UserService);
   private friendListService = inject(FriendsService);
+  private socket = inject(WebsocketService);
 
   currentFriendList: any;
 
@@ -24,12 +26,27 @@ export class SubFriendsColComponent implements OnInit, OnDestroy {
 
   searchValue: string;
 
+  state: 0 | 1; // 0 - friends, 1 - search
+
   constructor() {
+    this.state = 0;
     this.currentFriendList = [];
     this.searchValue = "";
   }
 
   ngOnInit(): void {
+    this.userService.newFriendSignal$.subscribe({
+      next: (res) => {
+        if (this.state == 0) {
+          this.showFriends();
+        }
+      }
+    })
+    this.socket.listen('accept-request').subscribe({
+      next: (data: any) => {
+        this.userService.addNewFriend(data.userId);
+      }
+    })
     this.friendListService.friendList$.subscribe({
       next: (res) => {
         this.currentFriendList.push(res);

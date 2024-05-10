@@ -193,6 +193,7 @@ export class ProfileMainComponent implements OnInit {
       error: () => {
         this.toastr.error("Request not found", "Error");
         this.ngOnInit();
+        this.isFriend = this.userService.isFriend(this.currentProfile._id);
       },
       complete: () => {
         this.friendRequestService.fetchAllRequests();

@@ -3,6 +3,7 @@ import { User } from "../models/user";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { IUser } from "../interfaces/dbInterfaces";
+import getCredFromToken from "../helpers/getCredentialsFromToken";
 
 class AuthController {
   async register(req: Request, res: Response) {
@@ -38,7 +39,7 @@ class AuthController {
     const user = await User.findOne({ $or: [{ email: email }, { username: username }] });
     if (user) {
       if (user.email === email) {
-        res.statusCode = 409; 
+        res.statusCode = 409;
         return res.json({
           "message": "duplicated email",
         });
@@ -81,7 +82,7 @@ class AuthController {
   }
 
   async login(req: Request, res: Response) {
-    const { username, password, email } = req.body; 
+    const { username, password, email } = req.body;
 
     //in case someone's trying to be real funny here
     if (!(typeof username) || !(typeof password) || !(typeof email)) {
@@ -145,7 +146,7 @@ class AuthController {
         "message": "secret key not found",
       });
     }
-    
+
     const token = jwt.sign({ username: username, userId: user._id }, process.env.SECRET);
     res.cookie('jwt', token, {
       httpOnly: true,
@@ -155,6 +156,7 @@ class AuthController {
     user.$set({
       password: undefined
     })
+    const io = req.app.get('io');
     return res.json(user);
   }
 

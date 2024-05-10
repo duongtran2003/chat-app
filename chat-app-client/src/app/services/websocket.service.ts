@@ -7,13 +7,17 @@ import { environment } from '../../environments/environment.development';
   providedIn: 'root'
 })
 export class WebsocketService {
-  
+
   socket: any;
 
-  constructor() { 
+  constructor() {
     this.socket = io(environment.apiUrl, { forceNew: true, withCredentials: true });
   }
-  
+
+
+  connect() {
+    this.socket = io(environment.apiUrl, { forceNew: true, withCredentials: true });
+  }
 
   listen(eventName: string) {
     return new Observable((subscriber) => {
@@ -22,11 +26,11 @@ export class WebsocketService {
       })
     });
   }
-  
+
   emit(eventName: string, data: any) {
     this.socket.emit(eventName, data);
   }
-  
+
   disconnect() {
     this.socket.disconnect();
   }

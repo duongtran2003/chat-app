@@ -11,6 +11,7 @@ export class FriendRequestService {
   requestList: any[];
   public requestList$ = new Subject<any>();
   public clearSignal$ = new Subject<any>();
+  public requestNum$ = new Subject<any>();
 
   constructor() {
     this.requestList = [];
@@ -26,12 +27,22 @@ export class FriendRequestService {
     this.clearSignal$.next("");
     this.api.get('friendRequests/', []).subscribe({
       next: (res) => {
+        if (res.length) {
+          this.requestSignal(true);
+        }
+        else {
+          this.requestSignal(false);
+        }
         for (let request of res) {
           this.requestList.push(request);
           this.requestList$.next(request);
         }
       }
     });
+  }
+
+  requestSignal(res: boolean) {
+    this.requestNum$.next(res);
   }
 
   checkRequest(id: string): Observable<any> {

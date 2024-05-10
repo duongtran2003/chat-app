@@ -5,6 +5,7 @@ import { Types } from "mongoose";
 
 class FriendRequestController {
   async create(req: Request, res: Response) {
+    const io = req.app.get('io');
     const userId = res.locals.claims.userId;
 
     const user = await User.findById(userId);
@@ -22,6 +23,7 @@ class FriendRequestController {
       recipient: recipient
     })
       .then((newRequest) => {
+        io.to(recipient).emit('new-request', { requestId: newRequest._id });
         return res.status(201).json(newRequest);
       })
       .catch((err) => {
@@ -64,6 +66,7 @@ class FriendRequestController {
     const senderId = friendRequest!.sender;
 
     if (action == "accept") {
+      const io = req.app.get('io');
       const userId = res.locals.claims.userId;
       const user = await User.findById(userId);
       const sender = await User.findById(senderId);
@@ -72,6 +75,8 @@ class FriendRequestController {
       user?.save();
       sender?.save();
       await FriendRequest.findOneAndDelete({ sender: otherUserId, recipient: userId });
+      io.to(otherUserId).emit('accept-request', { userId: userId, username: user?.username });
+      console.log(otherUserId);
       return res.status(200).json({ "message": "success" });
     }
     else {

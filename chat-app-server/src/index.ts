@@ -24,8 +24,6 @@ app.use(urlencoded({
 
 const port = process.env.PORT;
 
-app.use(router);
-
 const server = app.listen(port, () => {
   console.log(`Listening to port ${port}`);
 })
@@ -39,7 +37,7 @@ const ioInstance = new io.Server(server, {
 
 app.set('io', ioInstance);
 
-ioInstance.on('connection', (socket) => {
+ioInstance.on('connection', (socket: any) => {
   if (socket.handshake.headers.cookie) {
     const result = getCredFromToken(socket.handshake.headers.cookie);
     if (typeof result === "string") {
@@ -50,3 +48,7 @@ ioInstance.on('connection', (socket) => {
     console.log('Connected to room with ID: ' + result.userId);
   }
 });
+app.use(router);
+
+
+

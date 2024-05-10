@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { ApiService } from './api.service';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -10,6 +10,8 @@ export class UserService {
 
 
   public currentUser: any
+
+  public newFriendSignal$ = new Subject<any>();
 
   constructor() {
     this.currentUser = {};
@@ -57,6 +59,12 @@ export class UserService {
   }
 
   addNewFriend(id: string) {
+    this.newFriendSignal$.next("");
+    for (let friend of this.currentUser.friends) {
+      if (friend == id) {
+        return;
+      }
+    }
     this.currentUser.friends.push(id);
   }
 }

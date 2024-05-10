@@ -11,21 +11,24 @@ import { SubFriendRequestsColComponent } from '../../components/sub-friend-reque
 import { MainColService } from '../../services/main-col.service';
 import { ProfileMainComponent } from '../../components/profile-main/profile-main.component';
 import { ConversationMainComponent } from '../../components/conversation-main/conversation-main.component';
+import { FriendRequestService } from '../../services/friend-request.service';
+import { ToastrModule, ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-main',
   standalone: true,
   imports: [
-    RouterOutlet, 
-    RouterLink, 
-    RouterLinkActive, 
-    CommonModule, 
-    FontAwesomeModule, 
-    SubFriendsColComponent, 
-    SubConversationsColComponent, 
-    SubFriendRequestsColComponent, 
-    ProfileMainComponent, 
-    ConversationMainComponent
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    CommonModule,
+    FontAwesomeModule,
+    SubFriendsColComponent,
+    SubConversationsColComponent,
+    SubFriendRequestsColComponent,
+    ProfileMainComponent,
+    ConversationMainComponent,
+    ToastrModule
   ],
   templateUrl: './main.component.html',
   styleUrl: './main.component.css'
@@ -35,7 +38,10 @@ export class MainComponent implements OnDestroy, OnInit {
   private router = inject(Router);
   private wsService = inject(WebsocketService);
   private mainTab = inject(MainColService);
-  private socket: any;
+  private friendRequestService = inject(FriendRequestService);
+  private socket = inject(WebsocketService);
+  private toastr = inject(ToastrService);
+
 
   navProfileIcon = faUser;
   navFriends = faAddressBook;
@@ -49,16 +55,39 @@ export class MainComponent implements OnDestroy, OnInit {
   currentTab: 0 | 1 | 2 | 3;
   currentSubColTab: 0 | 1 | 2 | 3;
   currentMainTab: 0 | 1 | 2;
+  hasNewRequest: boolean;
+  hasNewConversation: boolean;
+
 
   constructor() {
+    this.hasNewConversation = false;
+    this.hasNewRequest = false;
     this.user = {};
     this.currentTab = 0;
     this.currentSubColTab = 0;
     this.currentMainTab = 0;
+    console.log('main constructed');
+    this.socket.connect();
   }
 
 
   ngOnInit(): void {
+    this.socket.listen('new-request').subscribe({
+      next: (data) => {
+        this.friendRequestService.fetchAllRequests();
+      }
+    });
+    this.socket.listen('accept-request').subscribe({
+      next: (data: any) => {
+        this.toastr.success(`${data.username} has accepted your friend request`, "You've got a new friend");
+      }
+    })
+    this.friendRequestService.fetchAllRequests();
+    this.friendRequestService.requestNum$.subscribe({
+      next: (res) => {
+        this.hasNewRequest = res
+      }
+    })
     this.mainTab.currentMainTab$.subscribe({
       next: (tab) => {
         this.currentMainTab = tab;
@@ -68,6 +97,7 @@ export class MainComponent implements OnDestroy, OnInit {
       next: (user) => {
         this.user = user;
         this.userService.setUser(user);
+        this.switchTab(0);
       },
       error: (err) => {
         const statusCode = err.status;
