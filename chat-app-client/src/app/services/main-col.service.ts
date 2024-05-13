@@ -6,15 +6,15 @@ import { Subject } from 'rxjs';
 })
 export class MainColService {
 
-  public currentMainTab$ = new Subject<any> ();
-  public currentMainTabId$ = new Subject<any> ();
+  public currentMainTab$ = new Subject<any>();
+  public currentMainTabId$ = new Subject<any>();
   private currentId = "";
   private currentMainTab = 0;
   constructor() { }
 
   switchTab(tab: number, id: string) {
-    // 1 - profle
-    // 3 - conversation
+    // 1 - profile
+    // 2 - conversation
     this.currentId = id;
     this.currentMainTab = tab;
     this.currentMainTab$.next(tab);

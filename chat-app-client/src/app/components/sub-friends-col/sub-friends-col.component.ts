@@ -70,6 +70,7 @@ export class SubFriendsColComponent implements OnInit, OnDestroy {
   }
 
   showFriends() {
+    this.searchValue = "";
     this.currentFriendList = [];
     this.friendListService.fetchFriendList(this.userService.getUser().friends);
   }

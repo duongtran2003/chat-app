@@ -1,3 +1,6 @@
-<div>
-  conversations go here 
+
+<div class="overflow-y-scroll h-screen">
+  @for (conversation of conversationList; track $index) {
+    <app-conversation [conversation]="conversation"></app-conversation>
+  }
 </div>

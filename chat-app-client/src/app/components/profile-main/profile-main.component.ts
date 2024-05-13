@@ -237,4 +237,8 @@ export class ProfileMainComponent implements OnInit {
       }
     })
   }
+
+  sendMessage() {
+
+  }
 }
