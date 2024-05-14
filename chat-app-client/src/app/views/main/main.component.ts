@@ -13,6 +13,8 @@ import { ProfileMainComponent } from '../../components/profile-main/profile-main
 import { ConversationMainComponent } from '../../components/conversation-main/conversation-main.component';
 import { FriendRequestService } from '../../services/friend-request.service';
 import { ToastrModule, ToastrService } from 'ngx-toastr';
+import { Subscription } from 'rxjs';
+import { FriendsService } from '../../services/friends.service';
 
 @Component({
   selector: 'app-main',
@@ -36,12 +38,10 @@ import { ToastrModule, ToastrService } from 'ngx-toastr';
 export class MainComponent implements OnDestroy, OnInit {
   private userService = inject(UserService);
   private router = inject(Router);
-  private wsService = inject(WebsocketService);
   private mainTab = inject(MainColService);
   private friendRequestService = inject(FriendRequestService);
   private socket = inject(WebsocketService);
   private toastr = inject(ToastrService);
-
 
   navProfileIcon = faUser;
   navFriends = faAddressBook;
@@ -49,7 +49,7 @@ export class MainComponent implements OnDestroy, OnInit {
   navFriendRequest = faUserPlus;
   navLogout = faSignOut;
 
-
+  subscriptions: Subscription[] = [];
 
   user: any;
   currentTab: 0 | 1 | 2 | 3;
@@ -72,27 +72,30 @@ export class MainComponent implements OnDestroy, OnInit {
 
 
   ngOnInit(): void {
-    this.socket.listen('new-request').subscribe({
-      next: (data) => {
-        this.friendRequestService.fetchAllRequests();
-      }
-    });
-    this.socket.listen('accept-request').subscribe({
-      next: (data: any) => {
-        this.toastr.success(`${data.username} has accepted your friend request`, "You've got a new friend");
-      }
-    })
+    this.subscriptions.push(
+      this.socket.listen('new-request').subscribe({
+        next: (data) => {
+          this.friendRequestService.fetchAllRequests();
+        }
+      }),
+      this.socket.listen('accept-request').subscribe({
+        next: (data: any) => {
+          this.toastr.success(`${data.username} has accepted your friend request`, "You've got a new friend");
+          this.userService.addNewFriend(data.userId);
+        }
+      }),
+      this.friendRequestService.requestNum$.subscribe({
+        next: (res) => {
+          this.hasNewRequest = res
+        }
+      }),
+      this.mainTab.currentMainTab$.subscribe({
+        next: (tab) => {
+          this.currentMainTab = tab;
+        }
+      }),
+    );
     this.friendRequestService.fetchAllRequests();
-    this.friendRequestService.requestNum$.subscribe({
-      next: (res) => {
-        this.hasNewRequest = res
-      }
-    })
-    this.mainTab.currentMainTab$.subscribe({
-      next: (tab) => {
-        this.currentMainTab = tab;
-      }
-    });
     this.userService.fetchUser().subscribe({
       next: (user) => {
         this.user = user;
@@ -113,10 +116,11 @@ export class MainComponent implements OnDestroy, OnInit {
 
   ngOnDestroy(): void {
     console.log("main destroyed");
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   logout() {
-    this.wsService.disconnect();
+    this.socket.disconnect();
     this.userService.logout().subscribe({
       next: () => {
         this.router.navigate(['/login']);

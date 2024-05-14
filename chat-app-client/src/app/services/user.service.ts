@@ -59,12 +59,12 @@ export class UserService {
   }
 
   addNewFriend(id: string) {
-    this.newFriendSignal$.next("");
     for (let friend of this.currentUser.friends) {
       if (friend == id) {
         return;
       }
     }
     this.currentUser.friends.push(id);
+    this.newFriendSignal$.next("");
   }
 }

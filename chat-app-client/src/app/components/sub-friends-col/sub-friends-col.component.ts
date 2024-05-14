@@ -5,7 +5,7 @@ import { FriendMiniProfileComponent } from '../friend-mini-profile/friend-mini-p
 import { faMagnifyingGlass, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule } from '@angular/forms';
-import { WebsocketService } from '../../services/websocket.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-sub-friends-col',
@@ -17,7 +17,6 @@ import { WebsocketService } from '../../services/websocket.service';
 export class SubFriendsColComponent implements OnInit, OnDestroy {
   private userService = inject(UserService);
   private friendListService = inject(FriendsService);
-  private socket = inject(WebsocketService);
 
   currentFriendList: any;
 
@@ -28,6 +27,8 @@ export class SubFriendsColComponent implements OnInit, OnDestroy {
 
   state: 0 | 1; // 0 - friends, 1 - search
 
+  subscriptions: Subscription[] = [];
+
   constructor() {
     this.state = 0;
     this.currentFriendList = [];
@@ -35,30 +36,25 @@ export class SubFriendsColComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.userService.newFriendSignal$.subscribe({
-      next: (res) => {
-        if (this.state == 0) {
-          this.showFriends();
+    this.subscriptions.push(
+      this.userService.newFriendSignal$.subscribe({
+        next: (res) => {
+          if (this.state == 0) {
+            this.showFriends();
+          }
         }
-      }
-    })
-    this.socket.listen('accept-request').subscribe({
-      next: (data: any) => {
-        this.userService.addNewFriend(data.userId);
-      }
-    })
-    this.friendListService.friendList$.subscribe({
-      next: (res) => {
-        this.currentFriendList.push(res);
-      }
-    });
+      }),
+      this.friendListService.friendList$.subscribe({
+        next: (res) => {
+          this.currentFriendList.push(res);
+        }
+      })
+    );
     this.showFriends();
-  }
-  ngOnDestroy(): void {
-    console.log("destroyed");
   }
 
   searchUser() {
+    this.state = 1;
     this.currentFriendList = [];
     this.userService.getUsers(this.searchValue).subscribe({
       next: (res) => {
@@ -70,8 +66,13 @@ export class SubFriendsColComponent implements OnInit, OnDestroy {
   }
 
   showFriends() {
+    this.state = 0;
     this.searchValue = "";
     this.currentFriendList = [];
     this.friendListService.fetchFriendList(this.userService.getUser().friends);
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 }

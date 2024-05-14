@@ -9,12 +9,6 @@ import { environment } from '../../environments/environment.development';
 export class WebsocketService {
 
   socket: any;
-
-  constructor() {
-    this.socket = io(environment.apiUrl, { forceNew: true, withCredentials: true });
-  }
-
-
   connect() {
     this.socket = io(environment.apiUrl, { forceNew: true, withCredentials: true });
   }

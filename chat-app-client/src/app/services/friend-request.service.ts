@@ -60,6 +60,7 @@ export class FriendRequestService {
   acceptFriendRequest(id: string): Observable<any> {
     return this.api.post('friendRequests/handleRequest', { otherUserId: id, action: "accept" });
   }
+
   declineFriendRequest(id: string): Observable<any> {
     return this.api.post('friendRequests/handleRequest', { otherUserId: id, action: "decline" });
   }

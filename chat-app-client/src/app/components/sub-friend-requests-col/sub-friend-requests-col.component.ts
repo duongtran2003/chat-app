@@ -1,6 +1,7 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { FriendRequestService } from '../../services/friend-request.service';
 import { FriendRequestComponent } from '../friend-request/friend-request.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-sub-friend-requests-col',
@@ -9,23 +10,27 @@ import { FriendRequestComponent } from '../friend-request/friend-request.compone
   templateUrl: './sub-friend-requests-col.component.html',
   styleUrl: './sub-friend-requests-col.component.css'
 })
-export class SubFriendRequestsColComponent implements OnInit {
+export class SubFriendRequestsColComponent implements OnInit, OnDestroy {
   private requestService = inject(FriendRequestService);
 
   requestList: any[];
 
+  subscriptions: Subscription[] = [];
+
   constructor() {
     this.requestList = [];
-    this.requestService.clearSignal$.subscribe({
-      next: () => {
-        this.requestList = [];
-      }
-    })
-    this.requestService.requestList$.subscribe({
-      next: (request) => {
-        this.requestList.push(request);
-      }
-    });
+    this.subscriptions.push(
+      this.requestService.clearSignal$.subscribe({
+        next: () => {
+          this.requestList = [];
+        }
+      }),
+      this.requestService.requestList$.subscribe({
+        next: (request) => {
+          this.requestList.push(request);
+        }
+      })
+    );
   }
 
   ngOnInit(): void {
@@ -36,5 +41,9 @@ export class SubFriendRequestsColComponent implements OnInit {
   fetchAllRequests() {
     this.requestList = [];
     this.requestService.fetchAllRequests();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 }

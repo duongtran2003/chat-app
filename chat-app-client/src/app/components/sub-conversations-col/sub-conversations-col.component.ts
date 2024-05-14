@@ -1,6 +1,7 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { ConversationsService } from '../../services/conversations.service';
 import { ConversationComponent } from '../conversation/conversation.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-sub-conversations-col',
@@ -9,27 +10,34 @@ import { ConversationComponent } from '../conversation/conversation.component';
   templateUrl: './sub-conversations-col.component.html',
   styleUrl: './sub-conversations-col.component.css'
 })
-export class SubConversationsColComponent implements OnInit {
+export class SubConversationsColComponent implements OnInit, OnDestroy {
 
   private conversationService = inject(ConversationsService);
 
   conversationList: any = [];
+  subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
-    this.conversationService.clearSignal$.subscribe({
-      next: () => {
-        this.conversationList = [];
-      }
-    })
-    this.conversationService.conversationList$.subscribe({
-      next: (res) => {
-        this.conversationList.push(res);
-      }
-    });
+    this.subscriptions.push(
+      this.conversationService.clearSignal$.subscribe({
+        next: () => {
+          this.conversationList = [];
+        }
+      }),
+      this.conversationService.conversationList$.subscribe({
+        next: (res) => {
+          this.conversationList.push(res);
+        }
+      })
+    );
     this.fetchAllConversations();
   }
 
   fetchAllConversations() {
     this.conversationService.fetchAllConversations();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 }

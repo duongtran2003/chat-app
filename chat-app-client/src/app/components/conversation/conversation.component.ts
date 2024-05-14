@@ -1,5 +1,4 @@
 import { Component, OnInit, Input, inject } from '@angular/core';
-import { ConversationsService } from '../../services/conversations.service';
 import { UserService } from '../../services/user.service';
 import { MainColService } from '../../services/main-col.service';
 
@@ -13,12 +12,17 @@ import { MainColService } from '../../services/main-col.service';
 export class ConversationComponent implements OnInit {
   @Input() conversation: any;
 
+
   private userService = inject(UserService);
   private mainCol = inject(MainColService);
 
 
-  otherUser: any;
-  currentUser: any;
+  otherUser: any = {};
+  currentUser: any = {};
+
+  constructor() {
+
+  }
 
 
   ngOnInit(): void {

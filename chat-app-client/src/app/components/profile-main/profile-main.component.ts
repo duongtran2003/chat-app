@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { MainColService } from '../../services/main-col.service';
 import { UserService } from '../../services/user.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -7,6 +7,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { FriendRequestService } from '../../services/friend-request.service';
+import { ConversationsService } from '../../services/conversations.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-profile-main',
@@ -15,12 +17,13 @@ import { FriendRequestService } from '../../services/friend-request.service';
   templateUrl: './profile-main.component.html',
   styleUrl: './profile-main.component.css',
 })
-export class ProfileMainComponent implements OnInit {
+export class ProfileMainComponent implements OnInit, OnDestroy {
 
   private mainCol = inject(MainColService);
   private userService = inject(UserService);
   private toastr = inject(ToastrService);
   private friendRequestService = inject(FriendRequestService);
+  private conversationService = inject(ConversationsService);
 
   emailIcon = faAt;
   usernameIcon = faCircleUser;
@@ -54,6 +57,8 @@ export class ProfileMainComponent implements OnInit {
   currentProfile: any = {};
   isFriend: boolean;
 
+  subscriptions: Subscription[] = [];
+
   constructor() {
     this.isFriend = false;
     this.currentUser = this.userService.getUser();
@@ -69,18 +74,23 @@ export class ProfileMainComponent implements OnInit {
 
   ngOnInit(): void {
     this.checkFriendStatus();
-    this.mainCol.currentMainTabId$.subscribe({
-      next: (id) => {
-        this.userService.getUserInfo(id).subscribe({
-          next: (user) => {
-            console.log(user);
-            this.currentProfile = user;
-            this.isFriend = this.userService.isFriend(this.currentProfile._id);
-            this.checkFriendStatus();
+    this.subscriptions.push(
+      this.mainCol.currentMainTabId$.subscribe({
+        next: (id) => {
+          if (this.mainCol.getCurrentMainTab() != 1) {
+            return;
           }
-        });
-      }
-    });
+          this.userService.getUserInfo(id).subscribe({
+            next: (user) => {
+              console.log(user);
+              this.currentProfile = user;
+              this.isFriend = this.userService.isFriend(this.currentProfile._id);
+              this.checkFriendStatus();
+            }
+          });
+        }
+      })
+    );
   }
 
   toggleEdit() {
@@ -239,6 +249,23 @@ export class ProfileMainComponent implements OnInit {
   }
 
   sendMessage() {
+    // check if conversation already existed
+    this.conversationService.fetchConversationByMember(this.currentProfile._id).subscribe({
+      next: (res) => {
+        this.mainCol.switchTab(2, res._id);
+      },
+      error: () => {
+        //conversation does not exist
+        this.conversationService.createNewConversation(this.currentProfile._id).subscribe({
+          next: (res) => {
+            this.mainCol.switchTab(2, res._id);
+          }
+        })
+      }
+    })
+  }
 
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 }

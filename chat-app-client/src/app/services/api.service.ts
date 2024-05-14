@@ -25,7 +25,7 @@ export class ApiService {
     });
   }
 
-  post(url: String, payload: any) {
+  post(url: String, payload: any): Observable<any> {
     let _url = environment.apiUrl + url;
     return this.api.post(_url, payload, {
       withCredentials: true,

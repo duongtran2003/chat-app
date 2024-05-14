@@ -33,4 +33,8 @@ export class ConversationsService {
   fetchConversationById(id: string) {
     return this.api.get(`conversations/${id}`, []);
   }
+
+  createNewConversation(id: string) {
+    return this.api.post('conversations', { recipient: id });
+  }
 }
