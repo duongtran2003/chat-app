@@ -28,6 +28,11 @@ export class SubConversationsColComponent implements OnInit, OnDestroy {
         next: (res) => {
           this.conversationList.push(res);
         }
+      }),
+      this.conversationService.newConversationSignal$.subscribe({
+        next: (res) => {
+          this.fetchAllConversations();
+        }
       })
     );
     this.fetchAllConversations();

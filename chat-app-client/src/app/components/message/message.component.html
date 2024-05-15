@@ -1,0 +1,15 @@
+<div class="flex mt-3" [ngClass]="{'flex-row-reverse': isOwner()}">
+  <div class="flex flex-col" [ngClass]="{'items-end': isOwner()}">
+    <div class="px-4 py-4 max-w-96 w-fit break-words rounded-lg" [ngClass]="{'bg-orange-400': isOwner(), 'text-white': isOwner(), 'bg-white': !isOwner(), 'text-black': !isOwner()}">
+      {{ message.content }}
+    </div>
+    <div class='text-xs text-gray-500'>
+      {{ formattedTimestamp }}
+    </div>
+    @if (isOwner() && message.isSeen) {
+      <div class="text-xs -mt-1 text-gray-500">
+        ✓
+      </div>
+    }
+  </div>
+</div>

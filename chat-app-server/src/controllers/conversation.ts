@@ -16,8 +16,8 @@ class ConversationController {
     const recipient = await User.findById(recipientId);
     user?.conversations.push(conversation._id);
     recipient?.conversations.push(conversation._id);
-    user?.save();
-    recipient?.save();
+    await user?.save();
+    await recipient?.save();
     return res.status(200).json(conversation);
   }
 

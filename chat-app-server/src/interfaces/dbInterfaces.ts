@@ -16,6 +16,7 @@ interface IMessage {
   sender: mongoose.Types.ObjectId,
   conversationId: mongoose.Types.ObjectId,
   content: string,
+  isSeen: boolean,
   createdAt?: Date,
   updatedAt?: Date,
 }

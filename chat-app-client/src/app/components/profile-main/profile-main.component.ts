@@ -258,6 +258,7 @@ export class ProfileMainComponent implements OnInit, OnDestroy {
         //conversation does not exist
         this.conversationService.createNewConversation(this.currentProfile._id).subscribe({
           next: (res) => {
+            this.conversationService.newConversationSignal$.next("");
             this.mainCol.switchTab(2, res._id);
           }
         })

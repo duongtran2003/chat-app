@@ -1,42 +1,132 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewChecked, inject, ViewChild, ElementRef } from '@angular/core';
 import { ConversationsService } from '../../services/conversations.service';
 import { MainColService } from '../../services/main-col.service';
 import { Subscription } from 'rxjs';
+import { UserService } from '../../services/user.service';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MessageComponent } from '../message/message.component';
 
 @Component({
   selector: 'app-conversation-main',
   standalone: true,
-  imports: [],
+  imports: [FormsModule, ReactiveFormsModule, MessageComponent],
   templateUrl: './conversation-main.component.html',
   styleUrl: './conversation-main.component.css'
 })
-export class ConversationMainComponent implements OnInit, OnDestroy {
+export class ConversationMainComponent implements OnInit, OnDestroy, AfterViewChecked {
+
+  @ViewChild('scrollMe') private scrollingContainer!: ElementRef;
 
   private conversationService = inject(ConversationsService);
   private mainCol = inject(MainColService);
+  private userService = inject(UserService);
 
   conversation: any = {};
+
+  otherUser: any = {};
+  currentUser: any = {};
+
+  messages: any = [];
+
+  chatForm = new FormGroup({
+    chatInput: new FormControl(""),
+  })
 
   private subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
+    this.currentUser = this.userService.getUser();
+    this.scrollToBottom();
     this.subscriptions.push(
       this.mainCol.currentMainTabId$.subscribe({
         next: (res) => {
           this.conversationService.fetchConversationById(res).subscribe({
             next: (res) => {
               this.conversation = res;
+              this.getMemberInfo();
+              this.messages = [];
+              this.fetchAllMessages();
             }
           })
+        }
+      }),
+      this.conversationService.messageList$.subscribe({
+        next: (res) => {
+          this.messages.push(res);
         }
       })
     );
     this.conversationService.fetchConversationById(this.mainCol.getCurrentTabId()).subscribe({
       next: (res) => {
         this.conversation = res;
-        console.log(res);
+        this.getMemberInfo();
+        this.messages = [];
+        this.fetchAllMessages();
       }
     })
+  }
+
+  ngAfterViewChecked(): void {
+    this.scrollToBottom();
+  }
+
+  getMemberInfo() {
+    if (!this.conversation.members) {
+      return;
+    }
+    for (let memberId of this.conversation.members) {
+      if (memberId != this.currentUser._id) {
+        this.userService.getUserInfo(memberId).subscribe({
+          next: (res) => {
+            this.otherUser = res;
+          }
+        })
+      }
+    }
+  }
+
+  switchToUserProfile() {
+    this.mainCol.switchTab(1, this.otherUser._id);
+  }
+
+  sendMessage(e: SubmitEvent) {
+    e.preventDefault();
+    let chatString = this.chatForm.value.chatInput;
+    if (!chatString) {
+      return;
+    }
+    chatString = chatString.trim();
+    if (chatString == "") {
+      return;
+    }
+    //Call message create api
+    console.log(chatString);
+    const payload = {
+      conversationId: this.conversation._id,
+      content: chatString,
+    }
+    this.conversationService.createNewMessage(payload).subscribe({
+      next: (res) => {
+        this.messages.push(res);
+        console.log(res)
+      }
+    })
+    this.chatForm.patchValue({
+      chatInput: "",
+    })
+  }
+
+  fetchAllMessages() {
+    this.conversationService.fetchAllMessages(this.conversation._id);
+  }
+
+  scrollToBottom() {
+    try {
+      this.scrollingContainer.nativeElement.scrollTop = this.scrollingContainer.nativeElement.scrollHeight;
+    }
+    catch (err) {
+      console.log(err);
+    }
   }
 
   ngOnDestroy(): void {
