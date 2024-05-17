@@ -1,5 +1,5 @@
 <div (click)="showChat()" class="px-2 cursor-pointer overflow-hidden flex h-14 w-full items-center hover:bg-gray-200 duration-200" [ngClass]="{ 'bg-white': !conversation.hasNew, 'bg-orange-200': conversation.hasNew }">
-  <img class="h-10 w-10 rounded-full" src="{{ otherUser.pfp }}">
+  <img class="h-10 w-10 rounded-full border-2 p-1" src="{{ otherUser.pfp }}" [ngClass]="{ 'border-green-400': otherUser.isOnline, 'border-gray-400': !otherUser.isOnline }">
   <div class="px-2 flex flex-col max-h-full truncate">
     <div class="truncate font-semibold">
       {{ otherUser.username }}

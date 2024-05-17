@@ -74,7 +74,7 @@ export class SubConversationsColComponent implements OnInit, OnDestroy {
             }
           }
         }
-      })
+      }),
     );
     this.fetchAllConversations();
   }

@@ -9,6 +9,7 @@ import { ToastrService } from 'ngx-toastr';
 import { FriendRequestService } from '../../services/friend-request.service';
 import { ConversationsService } from '../../services/conversations.service';
 import { Subscription } from 'rxjs';
+import { WebsocketService } from '../../services/websocket.service';
 
 @Component({
   selector: 'app-profile-main',
@@ -24,6 +25,7 @@ export class ProfileMainComponent implements OnInit, OnDestroy {
   private toastr = inject(ToastrService);
   private friendRequestService = inject(FriendRequestService);
   private conversationService = inject(ConversationsService);
+  private ws = inject(WebsocketService);
 
   emailIcon = faAt;
   usernameIcon = faCircleUser;
@@ -75,6 +77,20 @@ export class ProfileMainComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.checkFriendStatus();
     this.subscriptions.push(
+      this.ws.listen('user-connected').subscribe({
+        next: (data: any) => {
+          if (data.id == this.currentProfile._id) {
+            this.currentProfile.isOnline = true;
+          }
+        }
+      }),
+      this.ws.listen('user-disconnected').subscribe({
+        next: (data: any) => {
+          if (data.id == this.currentProfile._id) {
+            this.currentProfile.isOnline = false;
+          }
+        }
+      }),
       this.mainCol.currentMainTabId$.subscribe({
         next: (id) => {
           if (this.mainCol.getCurrentMainTab() != 1) {

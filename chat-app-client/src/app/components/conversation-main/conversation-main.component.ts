@@ -6,11 +6,12 @@ import { UserService } from '../../services/user.service';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MessageComponent } from '../message/message.component';
 import { WebsocketService } from '../../services/websocket.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-conversation-main',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, MessageComponent],
+  imports: [FormsModule, ReactiveFormsModule, MessageComponent, CommonModule],
   templateUrl: './conversation-main.component.html',
   styleUrl: './conversation-main.component.css'
 })
@@ -55,6 +56,20 @@ export class ConversationMainComponent implements OnInit, OnDestroy, AfterViewCh
       this.conversationService.messageList$.subscribe({
         next: (res) => {
           this.messages.push(res);
+        }
+      }),
+      this.ws.listen('user-connected').subscribe({
+        next: (data: any) => {
+          if (data.id == this.otherUser._id) {
+            this.otherUser.isOnline = true;
+          }
+        }
+      }),
+      this.ws.listen('user-disconnected').subscribe({
+        next: (data: any) => {
+          if (data.id == this.otherUser._id) {
+            this.otherUser.isOnline = false;
+          }
         }
       }),
       this.ws.listen('message-seen').subscribe({

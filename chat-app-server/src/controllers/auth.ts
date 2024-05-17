@@ -63,7 +63,8 @@ class AuthController {
       password: hashedPassword,
       pfp: process.env.DEFAULT_PROFILE_PIC || "null",
       friends: [],
-      conversations: []
+      conversations: [],
+      isOnline: false,
     }
 
     User.create(newUser)
@@ -156,8 +157,7 @@ class AuthController {
     res.statusCode = 200;
     user.$set({
       password: undefined
-    })
-    const io = req.app.get('io');
+    });
     return res.json(user);
   }
 

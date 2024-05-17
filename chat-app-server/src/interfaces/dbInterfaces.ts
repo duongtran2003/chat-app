@@ -8,6 +8,7 @@ interface IUser {
   pfp: string,
   friends: mongoose.Types.ObjectId[],
   conversations: mongoose.Types.ObjectId[],
+  isOnline: boolean,
   createdAt?: Date,
   updatedAt?: Date,
 }

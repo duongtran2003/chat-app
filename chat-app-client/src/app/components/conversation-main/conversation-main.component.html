@@ -1,6 +1,6 @@
 <div class="flex flex-col h-screen bg-gray-200 w-full">
   <div class="bg-white shadow-md flex px-4 py-3 items-center">
-    <img class="h-14 w-14 rounded-full" src="{{ otherUser.pfp }}">
+    <img class="h-14 w-14 rounded-full border-2 p-1" src="{{ otherUser.pfp }}" [ngClass]="{ 'border-green-400': otherUser.isOnline, 'border-gray-400': !otherUser.isOnline }">
     <div (click)="switchToUserProfile()" class="font-bold ml-4 cursor-pointer">{{ otherUser.username }}</div>
   </div>
   <div #scrollMe class="h-full overflow-y-scroll pb-8 pt-4 px-6">

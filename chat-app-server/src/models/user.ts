@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import { IUser } from "../interfaces/dbInterfaces";
 
-const userSchema = new Schema<IUser> ({
+const userSchema = new Schema<IUser>({
   email: {
     type: String,
   },
@@ -20,12 +20,16 @@ const userSchema = new Schema<IUser> ({
   },
   conversations: {
     type: [Schema.Types.ObjectId],
+  },
+  isOnline: {
+    type: Boolean,
+    default: false,
   }
 }, {
   timestamps: true
 });
 
-const User = model<IUser> ('User', userSchema);
+const User = model<IUser>('User', userSchema);
 
 export {
   User

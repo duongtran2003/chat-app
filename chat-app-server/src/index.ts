@@ -6,6 +6,7 @@ import { connect as connectToDB } from "../config/db";
 import { router } from "./routes/index";
 import io from 'socket.io';
 import getCredFromToken from "./helpers/getCredentialsFromToken";
+import { userDisconnected, userConnected } from "./helpers/socket";
 
 dotenv.config();
 
@@ -46,6 +47,10 @@ ioInstance.on('connection', (socket: any) => {
     }
     socket.join(result.userId);
     console.log('Connected to room with ID: ' + result.userId);
+    userConnected(app, result.userId);
+    socket.on('disconnecting', () => {
+      userDisconnected(app, result.userId);
+    })
   }
 });
 app.use(router);
