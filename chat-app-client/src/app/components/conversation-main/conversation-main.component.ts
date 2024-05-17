@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { UserService } from '../../services/user.service';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MessageComponent } from '../message/message.component';
+import { WebsocketService } from '../../services/websocket.service';
 
 @Component({
   selector: 'app-conversation-main',
@@ -20,6 +21,7 @@ export class ConversationMainComponent implements OnInit, OnDestroy, AfterViewCh
   private conversationService = inject(ConversationsService);
   private mainCol = inject(MainColService);
   private userService = inject(UserService);
+  private ws = inject(WebsocketService);
 
   conversation: any = {};
 
@@ -53,6 +55,31 @@ export class ConversationMainComponent implements OnInit, OnDestroy, AfterViewCh
       this.conversationService.messageList$.subscribe({
         next: (res) => {
           this.messages.push(res);
+        }
+      }),
+      this.ws.listen('message-seen').subscribe({
+        next: (data: any) => {
+          if (data.conversationId == this.conversation._id) {
+            for (let message of this.messages) {
+              if (message._id == data._id) {
+                message.isSeen = true;
+              }
+            }
+          }
+        }
+      }),
+      this.ws.listen('new-message').subscribe({
+        next: (data: any) => {
+          this.conversationService.checkNewMessage();
+          if (data.conversationId == this.conversation._id) {
+            this.conversationService.fetchMessageById(data._id).subscribe({
+              next: (res) => {
+                this.messages.push(res);
+                this.conversationService.checkNewMessage();
+                this.conversationService.conversationCheckedSignal$.next(this.conversation._id);
+              }
+            })
+          }
         }
       })
     );
@@ -100,7 +127,6 @@ export class ConversationMainComponent implements OnInit, OnDestroy, AfterViewCh
       return;
     }
     //Call message create api
-    console.log(chatString);
     const payload = {
       conversationId: this.conversation._id,
       content: chatString,
@@ -108,7 +134,7 @@ export class ConversationMainComponent implements OnInit, OnDestroy, AfterViewCh
     this.conversationService.createNewMessage(payload).subscribe({
       next: (res) => {
         this.messages.push(res);
-        console.log(res)
+        this.conversationService.lastMessageSignal$.next({ id: this.conversation._id, content: chatString });
       }
     })
     this.chatForm.patchValue({

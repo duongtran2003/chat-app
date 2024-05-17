@@ -23,7 +23,9 @@ interface IMessage {
 
 interface IConversation {
   members: mongoose.Types.ObjectId[],
-  lastMessage: String,
+  lastMessage: string,
+  hasNew: boolean,
+  lastMessageOwner: mongoose.Types.ObjectId,
   createdAt?: Date,
   updatedAt?: Date,
 }

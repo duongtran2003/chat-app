@@ -1,13 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { ApiService } from './api.service';
 import { Subject } from 'rxjs';
+import { UserService } from './user.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ConversationsService {
   private api = inject(ApiService);
-
+  private userService = inject(UserService);
   public conversationList: any = [];
 
   public conversationList$ = new Subject<any>();
@@ -15,6 +16,10 @@ export class ConversationsService {
   public newMessageSignal$ = new Subject<any>();
   public messageList$ = new Subject<any>();
   public newConversationSignal$ = new Subject<any>();
+  public hasNewMessageSignal$ = new Subject<any>();
+  public messageSeenSignal$ = new Subject<any>();
+  public conversationCheckedSignal$ = new Subject<any>();
+  public lastMessageSignal$ = new Subject<any>();
 
 
   fetchAllConversations() {
@@ -22,10 +27,33 @@ export class ConversationsService {
     this.conversationList = [];
     this.api.get('conversations', []).subscribe({
       next: (res) => {
+        let hasNew = false;
         for (let conversation of res) {
           this.conversationList.push(conversation);
           this.conversationList$.next(conversation);
+          if (conversation.hasNew) {
+            if (conversation.lastMessageOwner != this.userService.getUser()._id) {
+              hasNew = true;
+            }
+          }
         }
+        this.hasNewMessageSignal$.next(hasNew);
+      }
+    });
+  }
+
+  checkNewMessage() {
+    this.api.get('conversations', []).subscribe({
+      next: (res) => {
+        let hasNew = false;
+        for (let conversation of res) {
+          if (conversation.hasNew) {
+            if (conversation.lastMessageOwner != this.userService.getUser()._id) {
+              hasNew = true;
+            }
+          }
+        }
+        this.hasNewMessageSignal$.next(hasNew);
       }
     });
   }
@@ -36,6 +64,7 @@ export class ConversationsService {
 
   fetchConversationById(id: string) {
     return this.api.get(`conversations/${id}`, []);
+
   }
 
   createNewConversation(id: string) {
@@ -52,7 +81,13 @@ export class ConversationsService {
         for (let message of res) {
           this.messageList$.next(message);
         }
+        this.checkNewMessage();
+        this.conversationCheckedSignal$.next(id);
       }
     })
+  }
+
+  fetchMessageById(id: string) {
+    return this.api.get(`messages/${id}`, []);
   }
 }

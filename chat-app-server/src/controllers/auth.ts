@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { IUser } from "../interfaces/dbInterfaces";
 import getCredFromToken from "../helpers/getCredentialsFromToken";
+import { disconnect } from "mongoose";
 
 class AuthController {
   async register(req: Request, res: Response) {

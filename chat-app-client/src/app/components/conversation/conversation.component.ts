@@ -1,11 +1,12 @@
 import { Component, OnInit, Input, inject } from '@angular/core';
 import { UserService } from '../../services/user.service';
 import { MainColService } from '../../services/main-col.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-conversation',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './conversation.component.html',
   styleUrl: './conversation.component.css'
 })
@@ -38,7 +39,7 @@ export class ConversationComponent implements OnInit {
     }
   }
 
-  showProfile() {
+  showChat() {
     this.mainCol.switchTab(2, this.conversation._id);
   }
 }

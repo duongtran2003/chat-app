@@ -15,6 +15,7 @@ import { FriendRequestService } from '../../services/friend-request.service';
 import { ToastrModule, ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
 import { FriendsService } from '../../services/friends.service';
+import { ConversationsService } from '../../services/conversations.service';
 
 @Component({
   selector: 'app-main',
@@ -42,6 +43,7 @@ export class MainComponent implements OnDestroy, OnInit {
   private friendRequestService = inject(FriendRequestService);
   private socket = inject(WebsocketService);
   private toastr = inject(ToastrService);
+  private conversationService = inject(ConversationsService);
 
   navProfileIcon = faUser;
   navFriends = faAddressBook;
@@ -73,6 +75,11 @@ export class MainComponent implements OnDestroy, OnInit {
 
   ngOnInit(): void {
     this.subscriptions.push(
+      this.conversationService.hasNewMessageSignal$.subscribe({
+        next: (res) => {
+          this.hasNewConversation = res;
+        }
+      }),
       this.socket.listen('new-request').subscribe({
         next: (data) => {
           this.friendRequestService.fetchAllRequests();
@@ -94,12 +101,18 @@ export class MainComponent implements OnDestroy, OnInit {
           this.currentMainTab = tab;
         }
       }),
+      this.socket.listen('new-message').subscribe({
+        next: (data: any) => {
+          this.conversationService.checkNewMessage();
+        }
+      }),
     );
     this.friendRequestService.fetchAllRequests();
     this.userService.fetchUser().subscribe({
       next: (user) => {
         this.user = user;
         this.userService.setUser(user);
+        this.conversationService.checkNewMessage();
         this.switchTab(0);
       },
       error: (err) => {
